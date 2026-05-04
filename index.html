@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#f5f5f5" media="(prefers-color-scheme:light)">
+<meta name="theme-color" content="#111111" media="(prefers-color-scheme:dark)">
+<title>Deutsch Vokabeln Quiz</title>
+<style>
+/* ===== RESET & ROOT ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f3f4f6;--surface:#fff;--text:#1f2937;--text2:#6b7280;--text3:#9ca3af;
+  --accent:#2563eb;--accent2:#1d4ed8;--accent-light:rgba(37,99,235,.08);
+  --danger:#dc2626;--danger-light:#fef2f2;--success:#16a34a;--success-light:#f0fdf4;
+  --warn:#f59e0b;--border:#e5e7eb;--border-light:#f3f4f6;
+  --radius-sm:8px;--radius:12px;--radius-lg:20px;--radius-xl:24px;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.04);--shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);--shadow-lg:0 4px 6px rgba(0,0,0,.04),0 2px 4px rgba(0,0,0,.04);
+  --mode-dec:#2563eb;--mode-dec-light:rgba(37,99,235,.1);
+  --mode-cnd:#059669;--mode-cnd-light:rgba(5,150,105,.1);
+  --mode-art:#d97706;--mode-art-light:rgba(217,119,6,.1);
+  --mod1:#e11d48;--mod1-light:rgba(225,29,72,.1);
+  --mod2:#059669;--mod2-light:rgba(5,150,105,.1);
+  --mod3:#2563eb;--mod3-light:rgba(37,99,235,.1);
+  --mod4:#7c3aed;--mod4-light:rgba(124,58,237,.1);
+}
+html{height:100%;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent;touch-action:manipulation;scroll-behavior:smooth}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','HarmonyOS Sans','Noto Sans SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+  background:var(--bg);color:var(--text);min-height:100vh;min-height:-webkit-fill-available;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overscroll-behavior:none;
+  padding:max(env(safe-area-inset-top,0px),8px) 0 env(safe-area-inset-bottom,0px)
+}
+
+/* ===== LAYOUT ===== */
+.container{max-width:480px;margin:0 auto;padding:0 14px calc(88px + env(safe-area-inset-bottom,0px))}
+header{text-align:center;padding:18px 0 6px}
+header h1{font-size:clamp(1.25rem,6vw,1.6rem);font-weight:900;letter-spacing:-.03em}
+header p{color:var(--text2);font-size:clamp(.72rem,3.2vw,.82rem);margin-top:3px;font-weight:500}
+
+/* ===== SECTION DIVIDERS ===== */
+.section-divider{height:1px;background:var(--border);margin:10px 0 10px;opacity:.5}
+
+/* ===== SECTION LABELS ===== */
+.section-label{font-size:clamp(.68rem,2.8vw,.74rem);color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;font-weight:700}
+
+/* ===== STATS BAR ===== */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0 14px}
+.stat{background:var(--surface);border-radius:var(--radius);padding:12px 4px;text-align:center;box-shadow:var(--shadow);border:1px solid var(--border-light)}
+.stat-value{font-size:clamp(1.1rem,5.5vw,1.4rem);font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.stat-label{font-size:clamp(.6rem,2.4vw,.68rem);color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-top:2px;font-weight:600}
+.stat-value.streak{color:var(--warn)}
+
+/* ===== MODE TABS ===== */
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:6px 0 14px}
+.tab{
+  padding:10px 8px;border-radius:var(--radius-lg);border:1.5px solid var(--border);
+  font-size:clamp(.68rem,2.8vw,.76rem);font-weight:600;cursor:pointer;
+  background:var(--surface);color:var(--text2);transition:all .2s;min-height:44px;
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  -webkit-tap-highlight-color:transparent;user-select:none;line-height:1.25
+}
+.tab:active{transform:scale(.97);background:var(--accent-light)}
+.tab.active{color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.tab.active.mode-dec{background:var(--mode-dec);border-color:var(--mode-dec)}
+.tab.active.mode-cnd{background:var(--mode-cnd);border-color:var(--mode-cnd)}
+.tab.active.mode-art{background:var(--mode-art);border-color:var(--mode-art)}
+
+/* ===== CONTROL PANEL ===== */
+.control-panel{
+  background:var(--surface);border-radius:var(--radius-xl);
+  padding:clamp(10px,3.5vw,16px);margin-bottom:12px;
+  box-shadow:var(--shadow-sm);border:1px solid var(--border-light)
+}
+
+/* ===== CARDS ===== */
+.card{
+  background:var(--surface);border-radius:var(--radius-xl);
+  padding:clamp(18px,5vw,28px);
+  box-shadow:var(--shadow-lg);
+  border:1px solid var(--border-light);
+  transition:all .25s ease
+}
+
+/* ===== MODULE TAGS ===== */
+.module-select{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:0}
+.module-tag{
+  padding:10px 8px;border-radius:var(--radius-lg);border:1.5px solid var(--border);
+  font-size:clamp(.68rem,2.8vw,.76rem);font-weight:600;cursor:pointer;
+  background:var(--surface);color:var(--text2);transition:all .2s;min-height:44px;
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  -webkit-tap-highlight-color:transparent;user-select:none;line-height:1.25
+}
+.module-tag:active{transform:scale(.97);background:var(--accent-light)}
+.module-tag.active{color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.module-tag.active.mod1{background:var(--mod1);border-color:var(--mod1)}
+.module-tag.active.mod2{background:var(--mod2);border-color:var(--mod2)}
+.module-tag.active.mod3{background:var(--mod3);border-color:var(--mod3)}
+.module-tag.active.mod4{background:var(--mod4);border-color:var(--mod4)}
+
+/* ===== QUESTION AREA ===== */
+.q-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px}
+.q-header-left{display:flex;align-items:center;gap:8px}
+.question-label{font-size:clamp(.7rem,2.8vw,.76rem);color:var(--text2);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+.q-mode-badge{font-size:clamp(.62rem,2.5vw,.7rem);padding:4px 12px;border-radius:12px;font-weight:700;white-space:nowrap;line-height:1.4}
+.q-mode-badge.mode-dec{background:var(--mode-dec-light);color:var(--mode-dec)}
+.q-mode-badge.mode-cnd{background:var(--mode-cnd-light);color:var(--mode-cnd)}
+.q-mode-badge.mode-art{background:var(--mode-art-light);color:var(--mode-art)}
+.q-counter{font-size:clamp(.65rem,2.6vw,.74rem);color:var(--text3);white-space:nowrap;font-weight:600}
+.question-word{font-size:clamp(1.5rem,7vw,2.2rem);font-weight:900;margin:14px 0;line-height:1.2;word-break:break-word;letter-spacing:-.02em}
+.question-hint{font-size:clamp(.74rem,3.2vw,.84rem);color:var(--text2);margin-bottom:20px;font-weight:500}
+.question-hint em{color:var(--accent);font-style:normal;font-weight:700}
+
+/* ===== ANSWER OPTIONS ===== */
+.options-wrap{display:flex;flex-direction:column;gap:8px}
+.options-wrap.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.options-wrap.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.option{
+  width:100%;padding:15px 14px;border-radius:var(--radius);border:2px solid var(--border);
+  background:var(--surface);text-align:center;font-size:clamp(.9rem,4vw,1rem);
+  cursor:pointer;transition:all .2s;min-height:52px;display:flex;align-items:center;justify-content:center;
+  -webkit-tap-highlight-color:transparent;user-select:none;line-height:1.35;font-weight:500
+}
+.option:active{transform:scale(.985);border-color:var(--accent);background:var(--accent-light)}
+.option.correct{border-color:var(--success);background:var(--success-light);transform:none}
+.option.wrong{border-color:var(--danger);background:var(--danger-light);transform:none}
+
+/* ===== FILL INPUT ===== */
+.fill-input{
+  width:100%;padding:15px 16px;border-radius:var(--radius);border:2px solid var(--border);
+  font-size:clamp(1rem,4.5vw,1.15rem);outline:none;transition:all .2s;min-height:52px;
+  -webkit-appearance:none;appearance:none;background:var(--surface);color:var(--text);
+  font-family:inherit;font-weight:500
+}
+.fill-input::placeholder{color:var(--text3)}
+.fill-input:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(37,99,235,.12)}
+.fill-input.correct{border-color:var(--success);background:var(--success-light)}
+.fill-input.wrong{border-color:var(--danger);background:var(--danger-light)}
+
+/* ===== BUTTONS ===== */
+.submit-btn{
+  width:100%;margin-top:12px;padding:15px;border-radius:var(--radius);border:none;
+  background:var(--accent);color:#fff;font-size:clamp(.95rem,4vw,1.05rem);
+  font-weight:700;cursor:pointer;transition:all .2s;min-height:52px;
+  -webkit-tap-highlight-color:transparent;letter-spacing:.01em
+}
+.submit-btn:active{transform:scale(.98);background:var(--accent2)}
+.submit-btn:disabled{opacity:.4;cursor:default;transform:none}
+
+/* ===== PROGRESS BAR ===== */
+.progress-wrap{display:block;margin:6px 0 10px}
+.progress-bar{width:100%;height:6px;border-radius:3px;background:var(--border-light);overflow:hidden}
+.progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),#7c3aed);transition:width .4s ease;width:0%}
+.progress-text{font-size:clamp(.6rem,2.4vw,.68rem);color:var(--text3);text-align:right;margin-top:3px;font-weight:500}
+
+/* ===== RESET LINK ===== */
+.reset-link{
+  font-size:clamp(.55rem,2vw,.62rem);color:var(--text3);cursor:pointer;
+  background:none;border:1px solid var(--border);border-radius:6px;
+  font-family:inherit;padding:1px 8px;margin-left:10px;
+  -webkit-tap-highlight-color:transparent;white-space:nowrap;transition:all .15s
+}
+.reset-link:active{color:var(--danger);border-color:var(--danger)}
+
+/* ===== FEEDBACK ===== */
+.feedback{
+  margin-top:14px;padding:14px 16px;border-radius:var(--radius);
+  font-size:clamp(.85rem,3.5vw,.95rem);text-align:center;display:none;font-weight:600;
+  animation:fadeIn .25s ease
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.feedback.show{display:block}
+.feedback.correct{background:var(--success-light);color:var(--success)}
+.feedback.wrong{background:var(--danger-light);color:var(--danger)}
+
+/* ===== NEXT BUTTON (hidden — action bar handles it) ===== */
+.next-btn{display:none}
+
+/* ===== BOTTOM ACTION BAR ===== */
+.action-bar{
+  position:fixed;bottom:0;left:0;right:0;z-index:100;
+  background:var(--surface);border-top:1px solid var(--border);
+  padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));
+  display:flex;align-items:center;gap:10px;
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  box-shadow:0 -1px 8px rgba(0,0,0,.04)
+}
+@supports not ((-webkit-backdrop-filter:blur(12px)) or (backdrop-filter:blur(12px))){
+  .action-bar{background:var(--surface)}
+}
+.action-next-btn{
+  display:none;flex:2;padding:18px 24px;border-radius:var(--radius-lg);
+  border:none;background:var(--accent);color:#fff;
+  font-size:clamp(1.05rem,4.8vw,1.2rem);font-weight:900;cursor:pointer;
+  min-height:56px;-webkit-tap-highlight-color:transparent;
+  text-align:center;white-space:nowrap;letter-spacing:.03em;
+  animation:pulseNext 1.5s ease-in-out infinite
+}
+.action-next-btn:active{background:var(--accent2);transform:scale(.98)}
+.action-next-btn.show{display:block}
+@keyframes pulseNext{0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,.4)}50%{box-shadow:0 0 0 10px rgba(37,99,235,0)}}
+.end-btn{
+  flex:1;padding:18px 20px;border-radius:var(--radius-lg);
+  border:none;background:linear-gradient(135deg,#f59e0b,#f97316);color:#fff;
+  font-size:clamp(.95rem,3.8vw,1.05rem);font-weight:800;cursor:pointer;
+  text-align:center;-webkit-tap-highlight-color:transparent;min-height:56px;
+  white-space:nowrap;letter-spacing:.02em;transition:all .2s;
+  box-shadow:0 2px 12px rgba(245,158,11,.25)
+}
+.end-btn:active{background:linear-gradient(135deg,#d97706,#ea580c);box-shadow:0 1px 4px rgba(245,158,11,.15);transform:scale(.97)}
+
+/* ===== RESULTS PAGE ===== */
+.results-wrap{display:none}
+.results-wrap.active{display:block;animation:slideUp .35s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.result-hero{text-align:center;padding:12px 0 8px}
+.result-icon{font-size:3rem;margin-bottom:4px;line-height:1}
+.result-percent{font-size:clamp(2.8rem,12vw,4rem);font-weight:900;letter-spacing:-.03em;line-height:1}
+.result-detail{font-size:clamp(.78rem,3.2vw,.88rem);color:var(--text2);margin-top:6px;font-weight:500}
+
+/* ===== RESULTS STATS ===== */
+.result-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:18px 0}
+.result-stat{
+  background:var(--bg);border-radius:var(--radius);padding:16px 12px;text-align:center;
+  transition:background .2s
+}
+.result-stat .val{font-size:clamp(1.15rem,5vw,1.5rem);font-weight:800;font-variant-numeric:tabular-nums}
+.result-stat .lbl{font-size:clamp(.62rem,2.4vw,.7rem);color:var(--text3);text-transform:uppercase;margin-top:3px;font-weight:500}
+
+/* ===== REVIEW FILTER ===== */
+.review-filter{display:flex;gap:8px;margin-bottom:14px}
+.review-filter button{
+  flex:1;padding:10px 8px;border-radius:var(--radius-lg);border:1.5px solid var(--border);
+  font-size:clamp(.72rem,2.8vw,.8rem);font-weight:600;cursor:pointer;
+  background:var(--surface);color:var(--text2);transition:all .2s;
+  -webkit-tap-highlight-color:transparent;min-height:44px;white-space:nowrap
+}
+.review-filter button:active{transform:scale(.97)}
+.review-filter button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* ===== HISTORY LIST ===== */
+.history-list{
+  display:flex;flex-direction:column;gap:5px;max-height:45vh;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  scroll-behavior:smooth;padding-right:2px
+}
+.history-list::-webkit-scrollbar{width:3px}
+.history-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.history-item{
+  display:flex;flex-direction:column;gap:3px;padding:10px 12px;
+  border-radius:var(--radius-sm);border:1px solid var(--border);
+  background:var(--surface);transition:all .15s;
+  flex-shrink:0;overflow:hidden
+}
+.history-item:active{transform:scale(.99)}
+.history-item.wrong{border-color:#fecdd3;background:var(--danger-light)}
+.history-item.correct{border-color:#bbf7d0;background:var(--success-light)}
+.history-item .h-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1px}
+.history-item .h-num{font-size:clamp(.6rem,2.2vw,.66rem);color:var(--text3);font-weight:600}
+.history-item .h-mark{font-size:1.2rem;line-height:1}
+.history-item .h-word{font-size:clamp(.85rem,3.8vw,.98rem);font-weight:700;line-height:1.2;word-break:break-word;overflow-wrap:break-word}
+.history-item .h-meta{display:flex;align-items:baseline;gap:5px;flex-wrap:wrap;line-height:1.35}
+.history-item .h-label{font-size:clamp(.7rem,2.8vw,.76rem);color:var(--text3);font-weight:500;flex-shrink:0}
+.history-item .h-answer{font-size:clamp(.78rem,3.2vw,.88rem);color:var(--text2);word-break:break-word;overflow-wrap:break-word;min-width:0}
+.history-item .h-answer.wrong-ans{color:var(--danger);text-decoration:line-through}
+.history-item .h-correct{font-size:clamp(.72rem,2.8vw,.8rem);color:var(--success);font-weight:600;word-break:break-word;overflow-wrap:break-word;min-width:0}
+.history-item .h-mark{font-size:1.35rem;flex-shrink:0;line-height:1.5}
+
+/* ===== RESULT ACTIONS ===== */
+.result-actions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+.result-actions button{
+  flex:1 1 auto;padding:14px 18px;border-radius:var(--radius-lg);
+  font-size:clamp(.84rem,3.4vw,.92rem);font-weight:700;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;min-height:48px;white-space:nowrap;
+  transition:all .2s
+}
+.result-actions button:active{transform:scale(.97)}
+.btn-primary{border:none;background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(37,99,235,.2)}
+.btn-primary:active{background:var(--accent2);box-shadow:none}
+.btn-outline{border:2px solid var(--accent);background:transparent;color:var(--accent)}
+.btn-outline:active{background:var(--accent-light)}
+
+/* ===== STATE TOGGLES ===== */
+.quiz-section{display:block}
+.quiz-section.hidden{display:none}
+
+/* ===== DARK MODE ===== */
+@media(prefers-color-scheme:dark){
+:root{
+  --bg:#0f0f0f;--surface:#1a1a1a;--text:#eee;--text2:#999;--text3:#666;
+  --border:#2a2a2a;--border-light:#222;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.4);--shadow:0 1px 3px rgba(0,0,0,.5);--shadow-lg:0 4px 6px rgba(0,0,0,.5);
+  --accent-light:rgba(59,130,246,.12);
+  --danger-light:rgba(220,38,38,.12);--success-light:rgba(22,163,74,.12)
+}
+.option.correct{background:var(--success-light)}.option.wrong{background:var(--danger-light)}
+.fill-input{color-scheme:dark}.fill-input.correct{background:var(--success-light)}.fill-input.wrong{background:var(--danger-light)}
+.feedback.correct{background:var(--success-light)}.feedback.wrong{background:var(--danger-light)}
+.history-item.wrong{background:var(--danger-light);border-color:#7f1d1d}
+.history-item.correct{background:var(--success-light);border-color:#166534}
+.result-stat{background:#1c1c1c}
+.action-bar{background:rgba(26,26,26,.92)}
+@supports not ((-webkit-backdrop-filter:blur(12px)) or (backdrop-filter:blur(12px))){
+  .action-bar{background:#1a1a1a}
+}
+}
+
+/* ===== RESPONSIVE BREAKPOINTS ===== */
+
+/* --- Phone class --- */
+
+/* iPhone SE / Galaxy S5 / small Android (320-359px) */
+@media(max-width:359px){
+  .container{padding:0 10px calc(84px + env(safe-area-inset-bottom,0px))}
+  .stats{gap:3px}.stat{padding:8px 2px}
+  .tabs{gap:3px}.tab{font-size:.62rem;padding:10px 3px}
+  .module-select{gap:5px}.module-tag{font-size:.62rem;padding:10px 5px}
+  .card{padding:14px}.option{padding:13px 12px;font-size:.84rem}
+  .question-word{font-size:1.2rem}
+  .result-percent{font-size:2.2rem}.result-stat{padding:12px 8px}
+  .q-mode-badge{font-size:.58rem;padding:2px 8px}
+  header p{font-size:.68rem}
+  #retryBadge{display:block!important;margin:4px 0 0!important;font-size:.6rem}
+}
+
+/* iPhone 6/7/8/SE2/12/13/14 & mainstream Android (360-389px) */
+@media(min-width:360px) and (max-width:389px){
+  .container{padding:0 12px calc(86px + env(safe-area-inset-bottom,0px))}
+}
+
+/* iPhone 14 Pro / 15/16 Pro / Pixel 6-9 / Huawei P60/Mate60 (390-413px) */
+@media(min-width:390px) and (max-width:413px){
+  .card{padding:20px 22px}
+}
+
+/* iPhone 14/15/16 Plus / 16/17 Pro Max / Galaxy S24 Ultra (414-430px) */
+@media(min-width:414px) and (max-width:430px){
+  .card{padding:22px 24px}.stats{gap:8px}
+}
+
+/* --- Mid-size: phone landscape / iPad mini portrait / foldable unfolded (431-767px) --- */
+@media(min-width:431px) and (max-width:767px){
+  .container{max-width:480px;margin:0 auto;padding:0 18px calc(88px + env(safe-area-inset-bottom,0px))}
+  .card{padding:26px 28px}
+  .stats{gap:10px}.stat{padding:12px 6px}
+  .tabs{gap:10px}
+  .history-list{max-height:50vh}
+  .action-bar{padding:12px max(18px,env(safe-area-inset-left,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-right,0px))}
+}
+
+/* --- Phone landscape (compact height) --- */
+@media(orientation:landscape) and (max-height:500px){
+  .container{padding:0 12px calc(60px + env(safe-area-inset-bottom,0px))}
+  header{padding:6px 0 2px}.stats{margin:4px 0 6px}
+  .section-label{margin-bottom:2px}.tabs{margin:3px 0 6px}
+  .card{padding:14px 18px}
+  .question-word{font-size:clamp(1rem,4vw,1.4rem);margin:4px 0}
+  .option{padding:10px 12px;min-height:40px;font-size:.85rem}
+  .history-list{max-height:25vh}
+  .action-bar{padding:4px 10px calc(4px + env(safe-area-inset-bottom,0px))}
+  .action-next-btn,.end-btn{min-height:42px;padding:10px 14px;font-size:.82rem}
+  .result-actions{margin-top:8px}
+  .control-panel{padding:8px 12px;margin-bottom:8px}
+}
+
+/* --- Tablet portrait (768px+) --- */
+@media(min-width:768px){
+  .container{max-width:520px;padding:0 20px 32px}
+  .card{padding:28px 32px}
+  .action-bar{
+    max-width:520px;left:50%;transform:translateX(-50%);
+    border-radius:20px 20px 0 0;padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px))
+  }
+  .stats{gap:10px}.stat{padding:14px 8px}
+  .tabs{gap:10px}.module-select{gap:10px}
+  .history-list{max-height:55vh}
+}
+
+/* --- Desktop / large tablets (1024px+) --- */
+@media(min-width:1024px){
+  .container{max-width:560px}
+  .action-bar{max-width:560px}
+}
+
+/* --- iPad Pro / large desktop (1200px+) --- */
+@media(min-width:1200px){
+  .container{max-width:600px}
+  .action-bar{max-width:600px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+  <h1>🇩🇪 Deutsch Vokabeln</h1>
+  <p>新经典德语2 · 词汇测验<span id="retryBadge" style="display:none;margin-left:6px;padding:2px 8px;border-radius:8px;background:var(--warn);color:#fff;font-size:clamp(.58rem,2.2vw,.65rem);font-weight:700;vertical-align:middle">错题重练中</span><button class="reset-link" onclick="if(confirm('确定清除所有记录？')){clearState();location.reload()}">🗑 清除</button></p>
+</header>
+
+<div class="stats">
+  <div class="stat"><div class="stat-value" id="score">0</div><div class="stat-label">得分</div></div>
+  <div class="stat"><div class="stat-value streak" id="streak">0</div><div class="stat-label">连击</div></div>
+  <div class="stat"><div class="stat-value" id="total">0</div><div class="stat-label">总题</div></div>
+  <div class="stat"><div class="stat-value" id="accuracy">—</div><div class="stat-label">正确率</div></div>
+</div>
+
+<div class="progress-wrap" id="progressWrap">
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-text" id="progressText">0 / 0 已探索</div>
+</div>
+
+<div class="section-divider"></div>
+
+<div class="control-panel">
+  <div class="section-label">🎯 题型（可多选）</div>
+  <div class="tabs">
+    <button class="tab active mode-dec" onclick="toggleMode('de-cn')">DE → CN 选择</button>
+    <button class="tab active mode-cnd" onclick="toggleMode('cn-de')">CN → DE 填空</button>
+    <button class="tab active mode-art" onclick="toggleMode('article')">冠词判断</button>
+  </div>
+  <div class="section-label" style="margin-top:8px">📚 模块（可多选）</div>
+  <div class="module-select" id="moduleSelect"></div>
+</div>
+
+<!-- QUIZ SECTION -->
+<div class="quiz-section" id="quizSection">
+  <div class="card">
+    <div class="q-header">
+      <div class="q-header-left">
+        <div class="question-label" id="qLabel">选择正确的中文释义</div>
+        <div class="q-mode-badge" id="qModeBadge"></div>
+      </div>
+      <div class="q-counter" id="qCounter"></div>
+    </div>
+    <div class="question-word" id="qWord">—</div>
+    <div class="question-hint" id="qHint"></div>
+    <div id="answerArea"></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="next-btn" id="nextBtn" onclick="nextQuestion()">下一题 →</button>
+  </div>
+</div>
+
+<!-- RESULTS SECTION -->
+<div class="results-wrap" id="resultsWrap">
+  <div class="card">
+    <div class="result-hero">
+      <div class="result-icon" id="resultIcon"></div>
+      <div class="result-percent" id="resultPercent"></div>
+      <div class="result-detail" id="resultDetail"></div>
+    </div>
+    <div class="result-grid">
+      <div class="result-stat"><div class="val" id="rScore">0</div><div class="lbl">得分</div></div>
+      <div class="result-stat"><div class="val" id="rCorrect">0</div><div class="lbl">正确数</div></div>
+      <div class="result-stat"><div class="val" id="rStreak">0</div><div class="lbl">最高连击</div></div>
+      <div class="result-stat"><div class="val" id="rTotal">0</div><div class="lbl">总题数</div></div>
+    </div>
+
+    <div class="section-label">📋 答题回顾</div>
+    <div class="review-filter">
+      <button class="active" data-filter="all" onclick="filterHistory('all')">全部</button>
+      <button data-filter="wrong" onclick="filterHistory('wrong')">❌ 只看错题</button>
+    </div>
+    <div class="history-list" id="historyList"></div>
+
+    <div class="result-actions">
+      <button class="btn-primary" onclick="retryWrong()" id="btnRetryWrong">🔄 只练错题</button>
+      <button class="btn-outline" onclick="restartQuiz()">🔁 再来一轮</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- Floating end button -->
+<div class="action-bar" id="actionBar">
+  <button class="action-next-btn" id="actionNext" onclick="nextQuestion()">▸ 下一题</button>
+  <button class="end-btn" onclick="endQuiz()"><span id="endBtnText">🏅 看结果</span></button>
+</div>
+
+<script>
+// ===== VOCABULARY DATA =====
+const vocab = [
+  {de:"das Prozent -e",cn:"百分比",article:"das",module:1},
+  {de:"minderjährig",cn:"未成年的",article:null,module:1},
+  {de:"alleinerziehend",cn:"单亲抚养的",article:null,module:1},
+  {de:"der Eheschein -e",cn:"结婚证",article:"der",module:1},
+  {de:"der Enkel -",cn:"孙子，外孙",article:"der",module:1},
+  {de:"der Cousin -s",cn:"堂兄弟，表兄弟",article:"der",module:1},
+  {de:"die Cousine -n",cn:"堂姐妹，表姐妹",article:"die",module:1},
+  {de:"der Neffe -n",cn:"外甥，侄子",article:"der",module:1},
+  {de:"die Nichte -n",cn:"外甥女，侄女",article:"die",module:1},
+  {de:"die Schwiegermutter ¨",cn:"婆婆，岳母",article:"die",module:1},
+  {de:"der Schwiegervater ¨",cn:"公公，岳父",article:"der",module:1},
+  {de:"die Verwandtschaft -en",cn:"亲属，亲戚",article:"die",module:1},
+  {de:"der Schwager ¨",cn:"姐夫，大舅子等",article:"der",module:1},
+  {de:"die Schwägerin -nen",cn:"嫂子，小姑子等",article:"die",module:1},
+  {de:"stören +A",cn:"打扰",article:null,module:1},
+  {de:"der Unfall ¨-e",cn:"事故",article:"der",module:1},
+  {de:"der Stau -s",cn:"堵车",article:"der",module:1},
+  {de:"rechtzeitig",cn:"准时的",article:null,module:1},
+  {de:"übernehmen +A",cn:"承担",article:null,module:1},
+  {de:"tagsüber",cn:"白天，日间",article:null,module:1},
+  {de:"glücklich",cn:"幸福的，高兴的",article:null,module:1},
+  {de:"tolerant",cn:"包容的",article:null,module:1},
+  {de:"unterstützen +A",cn:"支持",article:null,module:1},
+  {de:"das Verhältnis -se",cn:"关系",article:"das",module:1},
+  {de:"wenn",cn:"当……时；如果",article:null,module:1},
+  {de:"das Unternehmen -",cn:"企业",article:"das",module:1},
+  {de:"der Feierabend -e",cn:"下班",article:"der",module:1},
+  {de:"der Anteil -e",cn:"份额，占比",article:"der",module:1},
+  {de:"steigen",cn:"上升",article:null,module:1},
+  {de:"heiraten (+A)",cn:"结婚，嫁，娶",article:null,module:1},
+  {de:"die Scheidung -en",cn:"离婚",article:"die",module:1},
+  {de:"die Folge -n",cn:"后果；结果",article:"die",module:1},
+  {de:"verbringen +A",cn:"度过",article:null,module:1},
+  {de:"sich trennen",cn:"分手",article:null,module:1},
+  {de:"das Gefühl -e",cn:"感觉",article:"das",module:1},
+  {de:"erleben +A",cn:"经历，体验",article:null,module:1},
+  {de:"die Geburt -en",cn:"出生",article:"die",module:1},
+  {de:"schaffen +A",cn:"完成，办到",article:null,module:1},
+  {de:"unterschiedlich",cn:"不同的",article:null,module:1},
+  {de:"die Gesellschaft -en",cn:"社会",article:"die",module:1},
+  {de:"dick",cn:"胖的；厚的",article:null,module:1},
+  {de:"dünn",cn:"瘦的；稀薄的",article:null,module:1},
+  {de:"schlank",cn:"苗条的",article:null,module:1},
+  {de:"sympathisch",cn:"使人有好感的",article:null,module:1},
+  {de:"neugierig",cn:"好奇的",article:null,module:1},
+  {de:"intelligent",cn:"智慧的，聪明的",article:null,module:1},
+  {de:"ehrlich",cn:"诚实的",article:null,module:1},
+  {de:"treu",cn:"忠诚的",article:null,module:1},
+  {de:"fleißig",cn:"勤奋的",article:null,module:1},
+  {de:"die Eigenschaft -en",cn:"性格",article:"die",module:1},
+  {de:"der Strand ¨e",cn:"海滩",article:"der",module:2},
+  {de:"die Insel -n",cn:"岛，岛屿",article:"die",module:2},
+  {de:"das Ziel -e",cn:"目的地；目的",article:"das",module:2},
+  {de:"die Kreuzfahrt -en",cn:"乘游船旅行",article:"die",module:2},
+  {de:"der Tourist -en",cn:"旅游者",article:"der",module:2},
+  {de:"wandern",cn:"徒步旅行",article:null,module:2},
+  {de:"sich erholen",cn:"休养，休息",article:null,module:2},
+  {de:"die Temperatur -en",cn:"温度",article:"die",module:2},
+  {de:"sonnig",cn:"阳光充足的",article:null,module:2},
+  {de:"heiß",cn:"炎热的",article:null,module:2},
+  {de:"der Nebel -",cn:"雾",article:"der",module:2},
+  {de:"der Wind -e",cn:"风",article:"der",module:2},
+  {de:"die Sonne -n",cn:"太阳",article:"die",module:2},
+  {de:"die Wolke -n",cn:"云",article:"die",module:2},
+  {de:"sich erkälten",cn:"感冒，着凉",article:null,module:2},
+  {de:"buchen +A",cn:"预订",article:null,module:2},
+  {de:"unternehmen +A",cn:"着手，进行",article:null,module:2},
+  {de:"der Norden",cn:"北方",article:"der",module:2},
+  {de:"der Süden",cn:"南方",article:"der",module:2},
+  {de:"der Osten",cn:"东方",article:"der",module:2},
+  {de:"der Westen",cn:"西方",article:"der",module:2},
+  {de:"die Luft ¨e",cn:"空气",article:"die",module:2},
+  {de:"die Natur",cn:"自然（界）",article:"die",module:2},
+  {de:"der Lärm",cn:"噪音",article:"der",module:2},
+  {de:"der Fluss ¨e",cn:"河流，江",article:"der",module:2},
+  {de:"der See -n",cn:"湖",article:"der",module:2},
+  {de:"der Wald ¨er",cn:"树林，森林",article:"der",module:2},
+  {de:"umweltfreundlich",cn:"对环境友好的",article:null,module:2},
+  {de:"die Infrastruktur -en",cn:"基础设施",article:"die",module:2},
+  {de:"vergleichen +A",cn:"比较",article:null,module:2},
+  {de:"die Möglichkeit -en",cn:"可能，可行性",article:"die",module:2},
+  {de:"sozial",cn:"社会的",article:null,module:2},
+  {de:"öffentlich",cn:"公共的",article:null,module:2},
+  {de:"sich befinden",cn:"处于，在",article:null,module:2},
+  {de:"der Turm ¨e",cn:"塔，塔楼",article:"der",module:2},
+  {de:"die Karriere -n",cn:"职业生涯",article:"die",module:3},
+  {de:"der Beruf ¨e",cn:"职业",article:"der",module:3},
+  {de:"die Ausbildung -en",cn:"职业培训",article:"die",module:3},
+  {de:"verdienen +A",cn:"挣得",article:null,module:3},
+  {de:"sich bewerben",cn:"申请，求职",article:null,module:3},
+  {de:"die Bewerbung -en",cn:"求职，申请",article:"die",module:3},
+  {de:"der Lebenslauf ¨e",cn:"简历",article:"der",module:3},
+  {de:"das Vorstellungsgespräch -e",cn:"面试",article:"das",module:3},
+  {de:"die Qualifikation -en",cn:"资格，技能",article:"die",module:3},
+  {de:"die Fähigkeit -en",cn:"能力",article:"die",module:3},
+  {de:"das Stipendium",cn:"奖学金",article:"das",module:3},
+  {de:"der Bachelor",cn:"学士学位",article:"der",module:3},
+  {de:"der Master",cn:"硕士学位",article:"der",module:3},
+  {de:"die Teamfähigkeit",cn:"团队合作能力",article:"die",module:3},
+  {de:"die Belastbarkeit",cn:"抗压能力",article:"die",module:3},
+  {de:"die Kreativität",cn:"创造力",article:"die",module:3},
+  {de:"die Flexibilität",cn:"灵活性",article:"die",module:3},
+  {de:"motiviert",cn:"有动力的",article:null,module:3},
+  {de:"geeignet",cn:"合适的",article:null,module:3},
+  {de:"überzeugen +A",cn:"说服",article:null,module:3},
+  {de:"der Arbeitgeber -",cn:"雇主",article:"der",module:3},
+  {de:"der Arbeitnehmer -",cn:"雇员",article:"der",module:3},
+  {de:"die Stelle -n",cn:"职位；位置",article:"die",module:3},
+  {de:"die Arbeitszeit -en",cn:"工作时间",article:"die",module:3},
+  {de:"das Gehalt ¨er",cn:"薪水",article:"das",module:3},
+  {de:"die Erfahrung -en",cn:"经验，经历",article:"die",module:3},
+  {de:"das Praktikum ...ka",cn:"实习",article:"das",module:3},
+  {de:"der Kollege -n",cn:"同事",article:"der",module:3},
+  {de:"die Besprechung -en",cn:"会议，讨论",article:"die",module:3},
+  {de:"der Vertrag ¨e",cn:"合同",article:"der",module:3},
+  {de:"kündigen",cn:"辞职；解雇",article:null,module:3},
+  {de:"die Fortbildung -en",cn:"进修，继续教育",article:"die",module:3},
+  {de:"das Zeugnis -se",cn:"证书；成绩单",article:"das",module:3},
+  {de:"selbstständig",cn:"自主的，独立的",article:null,module:3},
+  {de:"die Branche -n",cn:"行业，领域",article:"die",module:3},
+  {de:"die Überstunde -n",cn:"加班",article:"die",module:3},
+  {de:"der Urlaub -e",cn:"假期，休假",article:"der",module:3},
+  {de:"das Einkommen -",cn:"收入",article:"das",module:3},
+  {de:"das Medium ...dien",cn:"媒体",article:"das",module:4},
+  {de:"die Nachricht -en",cn:"新闻，消息",article:"die",module:4},
+  {de:"das Netzwerk -e",cn:"网络",article:"das",module:4},
+  {de:"digital",cn:"数码的",article:null,module:4},
+  {de:"die Werbung",cn:"广告",article:"die",module:4},
+  {de:"die Zeitschrift -en",cn:"杂志",article:"die",module:4},
+  {de:"der Sender -",cn:"电台，电视台",article:"der",module:4},
+  {de:"senden +A",cn:"播送",article:null,module:4},
+  {de:"empfangen +A",cn:"接收",article:null,module:4},
+  {de:"übertragen +A",cn:"转播",article:null,module:4},
+  {de:"herunterladen +A",cn:"下载",article:null,module:4},
+  {de:"speichern +A",cn:"存储",article:null,module:4},
+  {de:"löschen +A",cn:"删除",article:null,module:4},
+  {de:"die Webseite -n",cn:"网页",article:"die",module:4},
+  {de:"das Passwort ¨er",cn:"密码",article:"das",module:4},
+  {de:"installieren +A",cn:"安装",article:null,module:4},
+  {de:"die Kommunikation",cn:"沟通，交流",article:"die",module:4},
+  {de:"die Funktion -en",cn:"功能",article:"die",module:4},
+  {de:"die App -s",cn:"应用软件",article:"die",module:4},
+  {de:"der Datenschutz",cn:"数据保护",article:"der",module:4},
+  {de:"der Bildschirm -e",cn:"屏幕",article:"der",module:4},
+  {de:"die Tastatur -en",cn:"键盘",article:"die",module:4},
+  {de:"der Drucker -",cn:"打印机",article:"der",module:4},
+  {de:"das Programm -e",cn:"程序；节目",article:"das",module:4},
+  {de:"die Software -s",cn:"软件",article:"die",module:4},
+  {de:"der Benutzer -",cn:"用户",article:"der",module:4},
+  {de:"das Konto ...ten",cn:"账户",article:"das",module:4},
+  {de:"die Verbindung -en",cn:"连接",article:"die",module:4},
+  {de:"kabellos",cn:"无线的",article:null,module:4},
+  {de:"der Link -s",cn:"链接",article:"der",module:4},
+  {de:"die Suchmaschine -n",cn:"搜索引擎",article:"die",module:4},
+  {de:"die E-Mail -s",cn:"电子邮件",article:"die",module:4},
+  {de:"der Anhang ¨e",cn:"附件",article:"der",module:4},
+  {de:"das Update -s",cn:"更新",article:"das",module:4},
+  {de:"die Sicherheit -en",cn:"安全",article:"die",module:4},
+  {de:"die Daten (Pl.)",cn:"数据",article:"die",module:4},
+];
+
+// ===== STATE =====
+let currentMode = null, currentWord = null, currentOptions = [], answered = false;
+let activeModes = new Set(['de-cn','cn-de','article']);
+let activeModules = new Set([1,2,3,4]);
+let score = 0, streak = 0, maxStreak = 0, total = 0, correct = 0;
+let history = [];
+let quizActive = true;
+let retryPool = null;
+let seenSet = new Set();
+
+// ===== HELPERS =====
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+function getPool(){
+  let pool=vocab.filter(v=>activeModules.has(v.module)&&(currentMode!=='article'||v.article));
+  if(retryPool) pool=pool.filter(v=>retryPool.some(r=>r.de===v.de&&r.cn===v.cn));
+  return pool;
+}
+
+function getProgressPool(){
+  let pool=vocab.filter(v=>activeModules.has(v.module));
+  if(retryPool) pool=pool.filter(v=>retryPool.some(r=>r.de===v.de&&r.cn===v.cn));
+  return pool;
+}
+
+
+
+// ===== PERSISTENCE =====
+const STORAGE_KEY='deutsch-quiz-v1';
+
+function saveState(){
+  try{
+    const data={score,streak,maxStreak,total,correct,history,quizActive,
+      seenSet:[...seenSet],activeModes:[...activeModes],activeModules:[...activeModules],
+      retryPool,isResults:document.getElementById('resultsWrap').classList.contains('active')};
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
+  }catch(e){}
+}
+
+function loadState(){
+  try{
+    const raw=localStorage.getItem(STORAGE_KEY);if(!raw) return false;
+    const data=JSON.parse(raw);if(!data) return false;
+    score=data.score||0;streak=data.streak||0;maxStreak=data.maxStreak||0;
+    total=data.total||0;correct=data.correct||0;history=data.history||[];
+    seenSet=new Set(data.seenSet||[]);
+    activeModes=new Set(data.activeModes||['de-cn','cn-de','article']);
+    activeModules=new Set(data.activeModules||[1,2,3,4]);
+    retryPool=data.retryPool||null;
+    if(retryPool) document.getElementById('retryBadge').style.display='inline';
+    updateStats();
+    // Sync tab/button UI
+    document.querySelectorAll('.tab').forEach(t=>{
+      const mode=t.onclick?.toString().match(/'(.*?)'/)?.[1];
+      if(mode) t.classList.toggle('active',activeModes.has(mode));
+    });
+    renderModules();
+    return data.isResults===true;
+  }catch(e){return false;}
+}
+
+function clearState(){
+  try{localStorage.removeItem(STORAGE_KEY);}catch(e){}
+  resetState();
+}
+
+function updateProgress(){
+  const pool=getProgressPool();if(!pool.length){document.getElementById('progressWrap').style.display='none';return}
+  let totalCombos=0;
+  for(const v of pool){
+    if(activeModes.has('de-cn')) totalCombos++;
+    if(activeModes.has('cn-de')) totalCombos++;
+    if(activeModes.has('article')&&v.article) totalCombos++;
+  }
+  const pct=totalCombos>0?Math.min(100,Math.round(seenSet.size/totalCombos*100)):0;
+  document.getElementById('progressFill').style.width=pct+'%';
+  document.getElementById('progressText').textContent=seenSet.size+' / '+totalCombos+' 已探索';
+  document.getElementById('progressWrap').style.display='block';
+}
+
+function cleanDEWord(raw){
+  return raw.replace(/^(der|die|das)\s+/,'').replace(/^sich\s+/,'').replace(/\(Pl\.\)/,'').replace(/\s*\.{3}\w.*$/,'').replace(/\s*\+\w.*$/,'').replace(/\s*¨.*$/,'').replace(/\s*-[a-z].*$/,'').replace(/\s*-\s*$/,'').trim();
+}
+
+function pickWrongsDE(currentWord, n=3){
+  const pool=getPool().filter(v=>v.de!==currentWord.de);
+  const picked=[];const used=new Set();
+  const cleanCurrent=cleanDEWord(currentWord.de);
+  while(picked.length<n&&picked.length<pool.length){
+    const r=pool[Math.floor(Math.random()*pool.length)];
+    const clean=cleanDEWord(r.de);
+    if(!used.has(clean)&&clean!==cleanCurrent){used.add(clean);picked.push(clean)}
+  }
+  return picked;
+}
+
+function pickWrongs(correctWord, n=3){
+  const pool = getPool().filter(v=>v.cn!==correctWord.cn);
+  const picked=[]; const used=new Set();
+  while(picked.length<n && picked.length<pool.length){
+    const r=pool[Math.floor(Math.random()*pool.length)];
+    if(!used.has(r.cn)){used.add(r.cn);picked.push(r.cn)}
+  }
+  return picked;
+}
+
+function addHistory(mode, word, userAns, correctAns, isCorrect){
+  history.push({mode,word,userAns,correctAns,isCorrect,timestamp:Date.now()});
+}
+
+// ===== RENDER =====
+function renderModules(){
+  const el=document.getElementById('moduleSelect');
+  const modColors={1:'mod1',2:'mod2',3:'mod3',4:'mod4'};
+  const names={1:'家庭与社会',2:'自然与文化',3:'教育与职业',4:'人与沟通'};
+  el.innerHTML=[1,2,3,4].map(m=>{
+    const cls=activeModules.has(m)?`active ${modColors[m]}`:'';
+    return `<button class="module-tag ${cls}" onclick="toggleModule(${m})">M${m} ${names[m]}</button>`;
+  }).join('');
+}
+
+const modeNames={'de-cn':'DE→CN','cn-de':'CN→DE','article':'冠词'};
+const modeIcons={'de-cn':'📖','cn-de':'✍️','article':'📋'};
+
+function newQuestion(){
+  if(!quizActive)return;
+  answered=false;
+  currentMode=pickMode();
+  let pool=getPool();
+  if(pool.length===0){
+    document.getElementById('qWord').textContent='请至少选择一个模块';
+    document.getElementById('answerArea').innerHTML='';
+    document.getElementById('nextBtn').className='next-btn';
+    return;
+  }
+  // Prefer unseen questions; reset when all seen
+  const unseen=pool.filter(v=>!seenSet.has(v.de+'|'+currentMode));
+  if(unseen.length>0) pool=unseen; else seenSet.clear();
+  currentWord=pool[Math.floor(Math.random()*pool.length)];
+  seenSet.add(currentWord.de+'|'+currentMode);
+
+  document.getElementById('qCounter').textContent=total>0?`第 ${total+1} 题`:'第 1 题';
+  const badge=document.getElementById('qModeBadge');
+  badge.textContent=modeIcons[currentMode]+' '+modeNames[currentMode];
+  badge.className='q-mode-badge mode-'+currentMode;
+
+  if(currentMode==='de-cn'){
+    document.getElementById('qLabel').textContent='选择中文释义';
+    document.getElementById('qWord').textContent=currentWord.de;
+    document.getElementById('qHint').textContent='';
+    const wrongs=pickWrongs(currentWord);
+    currentOptions=shuffle([currentWord.cn,...wrongs.slice(0,3)]);
+    const btns=currentOptions.map((o,i)=>
+      `<button class="option" onclick="answerDE_CN('${o.replace(/'/g,"\\'")}',${i})">${o}</button>`).join('');
+    document.getElementById('answerArea').innerHTML=`<div class="options-wrap grid2">${btns}</div>`;
+  } else if(currentMode==='cn-de'){
+    document.getElementById('qLabel').textContent='选择对应的德语释义';
+    document.getElementById('qWord').textContent=currentWord.cn;
+    document.getElementById('qHint').textContent='';
+    const correctClean=cleanDEWord(currentWord.de);
+    const wrongs=pickWrongsDE(currentWord);
+    currentOptions=shuffle([correctClean,...wrongs.slice(0,3)]);
+    const btns=currentOptions.map((o,i)=>
+      `<button class="option" onclick="answerCN_DE('${o.replace(/'/g,"\\'")}',${i})">${o}</button>`).join('');
+    document.getElementById('answerArea').innerHTML=`<div class="options-wrap grid2">${btns}</div>`;
+  } else if(currentMode==='article'){
+    document.getElementById('qLabel').textContent='这个词的冠词是？';
+    document.getElementById('qWord').textContent=currentWord.de.replace(/^(der|die|das)\s+/,'');
+    document.getElementById('qHint').textContent='选择 der / die / das';
+    const btns=['der','die','das'].map(a=>
+      `<button class="option" onclick="answerArticle('${a}')">${a}</button>`).join('');
+    document.getElementById('answerArea').innerHTML=`<div class="options-wrap grid3">${btns}</div>`;
+  }
+
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('feedback').textContent='';
+  document.getElementById('nextBtn').className='next-btn';
+  document.getElementById('nextBtn').textContent='下一题 →';
+  document.getElementById('actionNext').classList.remove('show');
+  document.getElementById('actionBar').classList.remove('has-next');
+  updateProgress();saveState();
+}
+
+function answerDE_CN(selected,idx){
+  if(answered||!quizActive)return;
+  answered=true;total++;
+  const correctAns=currentWord.cn;
+  const btns=document.querySelectorAll('.option');
+  btns.forEach(b=>{if(b.textContent===correctAns)b.classList.add('correct');else b.classList.add('wrong')});
+  const isOk=selected===correctAns;
+  if(isOk){score++;correct++;streak++;if(streak>maxStreak)maxStreak=streak}
+  else streak=0;
+  addHistory('de-cn',currentWord.de,selected,correctAns,isOk);
+  const fb=document.getElementById('feedback');
+  fb.className='feedback show '+(isOk?'correct':'wrong');
+  fb.textContent=isOk?`✓ 正确！${streak>1?' 🔥连击 ×'+streak:''}`:`✗ 答案是：${correctAns}`;
+  document.getElementById('actionNext').classList.add('show');
+  document.getElementById('actionBar').classList.add('has-next');
+  updateStats();updateProgress();saveState();
+}
+
+function answerCN_DE(selected,idx){
+  if(answered||!quizActive)return;
+  answered=true;total++;
+  const correctClean=cleanDEWord(currentWord.de);
+  const btns=document.querySelectorAll('.option');
+  btns.forEach((b,i)=>{if(b.textContent===correctClean)b.classList.add('correct');else b.classList.add('wrong')});
+  const isOk=selected===correctClean;
+  if(isOk){score++;correct++;streak++;if(streak>maxStreak)maxStreak=streak}
+  else streak=0;
+  addHistory('cn-de',currentWord.cn,selected,currentWord.de,isOk);
+  const fb=document.getElementById('feedback');
+  fb.className='feedback show '+(isOk?'correct':'wrong');
+  fb.textContent=isOk?`✓ 正确！${currentWord.de}${streak>1?' 🔥连击 ×'+streak:''}`:`✗ 正确答案：${currentWord.de}`;
+  document.getElementById('actionNext').classList.add('show');
+  document.getElementById('actionBar').classList.add('has-next');
+  updateStats();updateProgress();saveState();
+}
+
+function answerArticle(guess){
+  if(answered||!quizActive)return;
+  answered=true;total++;
+  const correctArt=currentWord.article;
+  const btns=document.querySelectorAll('.option');
+  btns.forEach(b=>{if(b.textContent===correctArt)b.classList.add('correct');else b.classList.add('wrong')});
+  const isOk=guess===correctArt;
+  if(isOk){score++;correct++;streak++;if(streak>maxStreak)maxStreak=streak}
+  else streak=0;
+  addHistory('article',currentWord.de,guess,correctArt,isOk);
+  const fb=document.getElementById('feedback');
+  fb.className='feedback show '+(isOk?'correct':'wrong');
+  fb.textContent=isOk?`✓ ${correctArt} 正确！${streak>1?' 🔥×'+streak:''}`:`✗ 应该是 ${correctArt}`;
+  document.getElementById('actionNext').classList.add('show');
+  document.getElementById('actionBar').classList.add('has-next');
+  updateStats();updateProgress();saveState();
+}
+
+function updateStats(){
+  document.getElementById('score').textContent=score;
+  document.getElementById('streak').textContent=streak;
+  document.getElementById('total').textContent=total;
+  document.getElementById('accuracy').textContent=total>0?Math.round(correct/total*100)+'%':'—';
+  // Brief pulse on score change
+  const se=document.getElementById('score');
+  se.style.transform='scale(1.4)';se.style.transition='transform .15s ease';
+  setTimeout(()=>se.style.transform='scale(1)',150);
+  if(streak>1){
+    const st=document.getElementById('streak');
+    st.style.transform='scale(1.3)';st.style.transition='transform .15s ease';
+    setTimeout(()=>st.style.transform='scale(1)',150);
+  }
+}
+
+function nextQuestion(){newQuestion()}
+
+function toggleMode(m){
+  if(!quizActive)return;
+  if(activeModes.has(m))activeModes.delete(m);else activeModes.add(m);
+  if(activeModes.size===0){activeModes.add(m)}
+  const modeLabels={'de-cn':'DE → CN','cn-de':'CN → DE','article':'冠词'};
+  const modeClass={'de-cn':'mode-dec','cn-de':'mode-cnd','article':'mode-art'};
+  document.querySelectorAll('.tab').forEach(t=>{
+    const label=t.textContent.trim();
+    for(const[k,v]of Object.entries(modeLabels)){
+      if(label.includes(v)){
+        const isActive=activeModes.has(k);
+        t.classList.toggle('active',isActive);
+        t.classList.toggle(modeClass[k],isActive);
+        break;
+      }
+    }
+  });
+  updateProgress();saveState();
+  newQuestion();
+}
+
+function pickMode(){const arr=[...activeModes];return arr[Math.floor(Math.random()*arr.length)]}
+
+function toggleModule(m){
+  if(!quizActive)return;
+  if(activeModules.has(m))activeModules.delete(m);else activeModules.add(m);
+  if(activeModules.size===0){activeModules.add(m)}
+  renderModules();updateProgress();saveState();
+  newQuestion();
+}
+
+// ===== END QUIZ & RESULTS =====
+function endQuiz(){
+  if(total===0){document.getElementById('endBtnText').textContent='请先答题';setTimeout(()=>document.getElementById('endBtnText').textContent='🏅 看结果',1500);return;}
+  quizActive=false;
+  document.getElementById('quizSection').classList.add('hidden');
+  document.getElementById('actionBar').style.display='none';
+  document.getElementById('resultsWrap').classList.add('active');
+  showResults();saveState();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showResults(){
+  const pct=Math.round(correct/total*100);
+  let icon,emoji;
+  if(pct>=90){icon='🏆';emoji='Ausgezeichnet! 太棒了！'}
+  else if(pct>=70){icon='🌟';emoji='Gut gemacht! 不错！'}
+  else if(pct>=50){icon='💪';emoji='Weiter so! 继续加油！'}
+  else{icon='📚';emoji='Übung macht den Meister! 熟能生巧！'}
+
+  document.getElementById('resultIcon').textContent=icon;
+  document.getElementById('resultPercent').textContent=pct+'%';
+  document.getElementById('resultDetail').textContent=emoji;
+  document.getElementById('rScore').textContent=score;
+  document.getElementById('rCorrect').textContent=correct+'/'+total;
+  document.getElementById('rStreak').textContent=maxStreak;
+  document.getElementById('rTotal').textContent=total;
+
+  const wrongCount=history.filter(h=>!h.isCorrect).length;
+  document.getElementById('btnRetryWrong').style.display=wrongCount>0?'':'none';
+
+  renderHistory('all');
+}
+
+function renderHistory(filter){
+  let items=filter==='wrong'?history.filter(h=>!h.isCorrect):history;
+  const modeIcon={'de-cn':'📖','cn-de':'✍️','article':'📋'};
+  const modeName={'de-cn':'DE→CN','cn-de':'CN→DE','article':'冠词'};
+  const html=items.map((h,i)=>{
+    const icon=modeIcon[h.mode]||'❓';
+    const cls=h.isCorrect?'correct':'wrong';
+    const mark=h.isCorrect?'✅':'❌';
+    const idx=filter==='wrong'?(history.filter(x=>!x.isCorrect).indexOf(h)+1):(i+1);
+    let ansCls=h.isCorrect?'':' wrong-ans';
+    let detail='';
+    if(!h.isCorrect) detail=`<span class="h-correct">→ ${h.correctAns}</span>`;
+    else detail=`<span class="h-correct">✓</span>`;
+    return `<div class="history-item ${cls}">
+      <div class="h-head">
+        <span class="h-num">#${idx} ${icon} ${modeName[h.mode]}</span>
+        <span class="h-mark">${mark}</span>
+      </div>
+      <div class="h-word">${h.word}</div>
+      <div class="h-meta">
+        <span class="h-label">回答</span>
+        <span class="h-answer${ansCls}">${h.userAns}</span>
+        ${detail}
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('historyList').innerHTML=html||'<div style="text-align:center;color:var(--text2);padding:20px">没有记录</div>';
+}
+
+function filterHistory(type){
+  document.querySelectorAll('.review-filter button[data-filter]').forEach(b=>b.classList.toggle('active',b.dataset.filter===type));
+  renderHistory(type);
+}
+
+function retryWrong(){
+  const wrongWords=history.filter(h=>!h.isCorrect);
+  if(wrongWords.length===0){
+    document.getElementById('btnRetryWrong').textContent='🎉 没有错题了！';
+    setTimeout(()=>document.getElementById('btnRetryWrong').textContent='🔄 只练错题',1500);
+    return;
+  }
+  retryPool=[];
+  wrongWords.forEach(h=>{
+    const v=vocab.find(v=>v.de===h.word||v.cn===h.word);
+    if(v&&!retryPool.some(r=>r.de===v.de&&r.cn===v.cn)) retryPool.push(v);
+  });
+  if(retryPool.length===0){retryPool=null;restartQuiz();return}
+  clearState();
+  document.getElementById('retryBadge').style.display='inline';
+  document.getElementById('resultsWrap').classList.remove('active');
+  transitionToQuiz();
+}
+
+function restartQuiz(){
+  clearState();retryPool=null;
+  document.getElementById('retryBadge').style.display='none';
+  resetState();
+  document.getElementById('resultsWrap').classList.remove('active');
+  transitionToQuiz();
+}
+
+function transitionToQuiz(){
+  window.scrollTo({top:0,behavior:'smooth'});
+  const qs=document.getElementById('quizSection');
+  qs.classList.remove('hidden');
+  qs.style.animation='none';
+  qs.offsetHeight;
+  qs.style.animation='slideUp .3s ease';
+  document.getElementById('actionBar').style.display='flex';
+  document.getElementById('actionNext').classList.remove('show');
+  document.getElementById('actionBar').classList.remove('has-next');
+  newQuestion();
+  setTimeout(()=>qs.style.animation='',300);
+}
+
+function resetState(){
+  quizActive=true;
+  score=0;streak=0;maxStreak=0;total=0;correct=0;history=[];
+  seenSet.clear();
+  updateStats();
+}
+
+// ===== INIT =====
+
+renderModules();
+const wasResults=loadState();
+updateProgress();
+if(wasResults){
+  quizActive=false;
+  showResults();
+  document.getElementById('quizSection').classList.add('hidden');
+  document.getElementById('resultsWrap').classList.add('active');
+  document.getElementById('actionBar').style.display='none';
+}else{
+  newQuestion();
+}
+
+// Keyboard: Enter to advance after answering
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'){
+    if(document.getElementById('actionNext').classList.contains('show')) nextQuestion();
+    else if(document.getElementById('resultsWrap').classList.contains('active')) restartQuiz();
+  }
+});
+</script>
+</body>
+</html>
