@@ -401,7 +401,7 @@ header p{color:var(--text2);font-size:clamp(.72rem,3.2vw,.82rem);margin-top:3px;
 <body>
 <div class="container">
 <header>
-  <h1>🇩🇪 Deutsch Vokabeln <span style="font-size:0.5em;color:#888;font-weight:normal;display:block">v46</span></h1>
+  <h1>🇩🇪 Deutsch Vokabeln <span style="font-size:0.5em;color:#888;font-weight:normal;display:block">v47</span></h1>
   <p>新经典德语2 · 词汇测验<span id="retryBadge" style="display:none;margin-left:6px;padding:2px 8px;border-radius:8px;background:var(--warn);color:#fff;font-size:clamp(.58rem,2.2vw,.65rem);font-weight:700;vertical-align:middle">错题重练中</span><button class="reset-link" onclick="if(confirm('确定清除所有记录？')){clearState();location.reload()}">🗑 清除</button></p>
 </header>
 
@@ -1442,7 +1442,7 @@ const vocab = [
   {de:"einfühlsam",cn:"有移情能力的，善解人意的",article:null,module:3},
   {de:"fehlerfrei",cn:"没有缺陷的，无瑕的",article:null,module:3},
   {de:"gegenüber +Dat",cn:"面对，在…… 对面",article:null,module:3},
-  {de:"vertreten +A",cn:"代表；维护，为…… 辩护",article:null,module:3},
+  {de:"vertreten A",cn:"代表；维护，为…… 辩护",article:null,module:3},
   {de:"nach/empfinden +A",cn:"感同身受，对…… 抱有同感",article:null,module:3},
   {de:"fähig +zu Dat",cn:"有能力的，能干的；能够做的",article:null,module:3},
   {de:"bereit +zu Dat",cn:"准备好的；乐意的",article:null,module:3},
@@ -1610,7 +1610,7 @@ const vocab = [
   {de:"die Leistung -en",cn:"成绩，成就，成果",article:"die",module:3},
   {de:"gegebenenfalls",cn:"如果有必要的话，一旦有必要",article:null,module:3},
   {de:"her/stellen +A",cn:"制造，生产；建立",article:null,module:3},
-  {de:"halten +A",cn:"保持，保持…… 状态；拿着，持，握",article:null,module:3},
+  {de:"halten A",cn:"保持，保持…… 状态；拿着，持，握",article:null,module:3},
   {de:"respektvoll",cn:"尊重的，恭敬的，毕恭毕敬的",article:null,module:3},
   {de:"die Kommunikationsform -en",cn:"交流方式，通信方式",article:"die",module:4},
   {de:"es handelt sich +um Akk",cn:"涉及，关系到……",article:null,module:4},
@@ -1657,7 +1657,7 @@ const vocab = [
   {de:"die Konferenz -en",cn:"会议，协商会",article:"die",module:4},
   {de:"die Lösung -en",cn:"解决；解决办法；答案",article:"die",module:4},
   {de:"die Reportage -n [repɔrˈtaːʒə]",cn:"（媒体中带有采访、评论等的）通讯报道，新闻报道",article:"die",module:4},
-  {de:"senden +A",cn:"播送，播放",article:null,module:4},
+  {de:"senden A",cn:"播送，播放",article:null,module:4},
   {de:"streiten +über Akk",cn:"争论，争辩",article:null,module:4},
   {de:"heilen +A",cn:"治愈，治好",article:null,module:4},
   {de:"das Sonnenbad ¨er",cn:"日光浴",article:"das",module:4},
@@ -1724,7 +1724,7 @@ const vocab = [
   {de:"überprüfen +A",cn:"检查，检验；复查，审核",article:null,module:4},
   {de:"der Zweck -e",cn:"目的，目标",article:"der",module:4},
   {de:"passieren",cn:"发生，遭遇",article:null,module:4},
-  {de:"sich unterhalten +mit Dat",cn:"消遣，娱乐，玩得开心",article:null,module:4},
+  {de:"sich unterhalten mit Dat",cn:"消遣，娱乐，玩得开心",article:null,module:4},
   {de:"finanzieren +A",cn:"为…… 筹措经费，向…… 提供资金",article:null,module:4},
   {de:"ein/halten +A",cn:"遵守，遵循",article:null,module:4},
   {de:"die Werbung nur Sg",cn:"广告，宣传",article:"die",module:4},
@@ -2103,7 +2103,7 @@ function pickWrongsDE(currentWord, n=3){
   while(picked.length<n&&picked.length<pool.length){
     const r=pool[Math.floor(Math.random()*pool.length)];
     const clean=cleanDEWord(r.de);
-    if(!used.has(clean)&&clean!==cleanCurrent){used.add(clean);picked.push(clean)}
+    if(!used.has(clean)&&clean!==cleanCurrent){used.add(clean);picked.push(r.de)}
   }
   return picked;
 }
@@ -2173,9 +2173,10 @@ function newQuestion(){
     document.getElementById('qHint').textContent='';
     const correctClean=cleanDEWord(currentWord.de);
     const wrongs=pickWrongsDE(currentWord);
-    currentOptions=shuffle([correctClean,...wrongs.slice(0,3)]);
-    const btns=currentOptions.map((o,i)=>
-      `<button class="option" onclick="answerCN_DE('${o.replace(/'/g,"\\'")}',${i})">${o}</button>`).join('');
+    const rawOptions=shuffle([currentWord.de,...wrongs.slice(0,3)]);
+    currentOptions=rawOptions.map(o=>cleanDEWord(o));
+    const btns=rawOptions.map((o,i)=>
+      `<button class="option" onclick="answerCN_DE('${currentOptions[i].replace(/'/g,"\\'")}',${i})">${o}</button>`).join('');
     document.getElementById('answerArea').innerHTML=`<div class="options-wrap grid2">${btns}</div>`;
   } else if(currentMode==='article'){
     document.getElementById('qLabel').textContent='这个词的冠词是？';
@@ -2218,7 +2219,7 @@ function answerCN_DE(selected,idx){
   answered=true;total++;
   const correctClean=cleanDEWord(currentWord.de);
   const btns=document.querySelectorAll('.option');
-  btns.forEach((b,i)=>{if(b.textContent===correctClean)b.classList.add('correct');else b.classList.add('wrong')});
+  btns.forEach((b,i)=>{if(currentOptions[i]===correctClean)b.classList.add('correct');else b.classList.add('wrong')});
   const isOk=selected===correctClean;
   if(isOk){score++;correct++;streak++;if(streak>maxStreak)maxStreak=streak}
   else streak=0;

@@ -74,6 +74,8 @@ deutsch-quiz/
 
 | 版本 | 备注 |
 |------|------|
+| v47 | CN→DE 按钮显示完整词形(含配价标记)，4组同形歧义消除；check.js 新增清洗同形自动检测 |
+| v46 | 消除16组中文释义重复，修复 knapp 清洗碰撞 |
 | v45 | SEO meta(OG/Twitter/description), 可访问性(user-scalable=yes), PWA图标(SVG), 390px裁切2列stats |
 | v44 | 屏蔽 `‑wöchig`/`‑bar` 被清空bug，音标 `[...]` 清洗，390px 自适应(2列stats)，工程完整性(LICENSE/check.js增强/CI集成)，README许可修正 |
 | v43 | Unicode 语法标记清洗 (+über Akk)，去重 knapp/Magazin，≤389px stats 自适应，manifest.json/LICENSE/check.js |

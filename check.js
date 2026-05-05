@@ -86,6 +86,30 @@ for (const entry of entries) {
 }
 if (!artErrors) console.log('  ✓ 冠词全部合法');
 
+// 5b. CN→DE 清洗同形检测
+console.log('📋 CN→DE 清洗同形检测...');
+const cleanMap = {};
+for (const entry of entries) {
+  const d = entry.match(/de:"([^"]*)"/);
+  if (d) {
+    const c = testClean(d[1]);
+    if (!cleanMap[c]) cleanMap[c] = [];
+    cleanMap[c].push({de: d[1], mod: entry.match(/module:(\d+)/)[1], cn: entry.match(/cn:"([^"]*)"/)[1]});
+  }
+}
+let collisionCount = 0;
+for (const [cl, items] of Object.entries(cleanMap)) {
+  if (items.length > 1) {
+    // Only report if the DIFFERENT de items share the same clean form
+    const uniqueDE = new Set(items.map(i => i.de));
+    if (uniqueDE.size > 1) {
+      err(`清洗同形 "${cl}" (${items.length}个): ` + items.map(i => `M${i.mod} de="${i.de}" cn="${i.cn}"`).join(', '));
+      collisionCount++;
+    }
+  }
+}
+if (!collisionCount) console.log('  ✓ 无清洗同形歧义');
+
 // 6. 全面清洗检查
 console.log('📋 深度清洗检查...');
 let emptyCount = 0, bracketRemnant = 0, plusRemnant = 0;
