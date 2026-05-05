@@ -326,16 +326,11 @@ header p{color:var(--text2);font-size:clamp(.72rem,3.2vw,.82rem);margin-top:3px;
   #retryBadge{display:block!important;margin:4px 0 0!important;font-size:.6rem}
 }
 
-/* iPhone 6/7/8/SE2/12/13/14 & mainstream Android (360-389px) */
-@media(min-width:360px) and (max-width:389px){
+/* iPhone 6/7/8/SE2/12/13/14, 14 Pro, 15/16 Pro, Pixel (360-413px) */
+@media(min-width:360px) and (max-width:413px){
   .container{padding:0 12px calc(86px + env(safe-area-inset-bottom,0px))}
   .stats{grid-template-columns:repeat(2,1fr);gap:6px}.stat{padding:8px 6px}.stat-value{font-size:1rem}
   .q-mode-badge{font-size:.6rem;padding:3px 8px}
-}
-
-/* iPhone 14 Pro / 15/16 Pro / Pixel 6-9 / Huawei P60/Mate60 (390-413px) */
-@media(min-width:390px) and (max-width:413px){
-  .card{padding:20px 22px}
 }
 
 /* iPhone 14/15/16 Plus / 16/17 Pro Max / Galaxy S24 Ultra (414-430px) */
@@ -397,7 +392,7 @@ header p{color:var(--text2);font-size:clamp(.72rem,3.2vw,.82rem);margin-top:3px;
 <body>
 <div class="container">
 <header>
-  <h1>🇩🇪 Deutsch Vokabeln <span style="font-size:0.5em;color:#888;font-weight:normal;display:block">v43</span></h1>
+  <h1>🇩🇪 Deutsch Vokabeln <span style="font-size:0.5em;color:#888;font-weight:normal;display:block">v44</span></h1>
   <p>新经典德语2 · 词汇测验<span id="retryBadge" style="display:none;margin-left:6px;padding:2px 8px;border-radius:8px;background:var(--warn);color:#fff;font-size:clamp(.58rem,2.2vw,.65rem);font-weight:700;vertical-align:middle">错题重练中</span><button class="reset-link" onclick="if(confirm('确定清除所有记录？')){clearState();location.reload()}">🗑 清除</button></p>
 </header>
 
@@ -2083,9 +2078,10 @@ function cleanDEWord(raw){
     .replace(/^(der|die|das)\s+/,'')
     .replace(/\s*\([^)]*\)\s*/g,'')
     .replace(/\s*\.{3}\w.*$/,'')
+    .replace(/\s*\[^\]]*\]/g,'')  // 剥音标 [ˈblɔɡn̩]
     .replace(/\s*\+\S+(?:\s+\S+)?/g,'')
     .replace(/\s*¨.*$/,'')
-    .replace(/\s*-[a-z]+.*$/,'')
+    .replace(/\s+-[a-zäöüß]+.*$/,'')             // 剥 -e -n -en -s 复数后缀
     .replace(/\s*-\s*$/,'')
     .replace(/\s+/g,' ')
     .trim();

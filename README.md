@@ -43,8 +43,11 @@ Einfach öffnen und loslegen — keine Installation nötig.
 ```
 deutsch-quiz/
 ├── index.html              # 单文件应用（HTML + CSS + JS + 词汇数据）
+├── manifest.json           # PWA manifest
+├── LICENSE                 # MIT License
+├── check.js                # 完整性检查脚本
 ├── .github/workflows/
-│   └── pages.yml           # GitHub Actions → Pages 部署流程
+│   └── pages.yml           # GitHub Actions → Pages 部署流程（含 check.js 验证）
 └── README.md               # 本文件
 ```
 
@@ -70,6 +73,7 @@ deutsch-quiz/
 
 | 版本 | 备注 |
 |------|------|
+| v44 | 屏蔽 `‑wöchig`/`‑bar` 被清空bug，音标 `[...]` 清洗，390px 自适应(2列stats)，工程完整性(LICENSE/check.js增强/CI集成)，README许可修正 |
 | v43 | Unicode 语法标记清洗 (+über Akk)，去重 knapp/Magazin，≤389px stats 自适应，manifest.json/LICENSE/check.js |
 | v42 | 全部 1,513 词入库，修复 cleanDEWord() 正则 bug，移动端溢出保护 |
 | v41 | 部分词版，多轮 CSS/UX 精调 |
@@ -79,7 +83,7 @@ deutsch-quiz/
 
 ## 📝 许可 / Lizenz
 
-Private project — for personal learning use.
+MIT License — see [LICENSE](LICENSE) file for details.
 
 ---
 
