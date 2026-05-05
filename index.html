@@ -8,6 +8,7 @@
 <meta name="theme-color" content="#f5f5f5" media="(prefers-color-scheme:light)">
 <meta name="theme-color" content="#111111" media="(prefers-color-scheme:dark)">
 <title>Deutsch Vokabeln Quiz</title>
+<link rel="manifest" href="manifest.json">
 <style>
 /* ===== RESET & ROOT ===== */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -35,7 +36,7 @@ body{
 }
 
 /* ===== LAYOUT ===== */
-.container{max-width:480px;margin:0 auto;padding:0 14px calc(88px + env(safe-area-inset-bottom,0px))}
+.container{max-width:480px;margin:0 auto;padding:0 14px calc(88px + env(safe-area-inset-bottom,0px));width:100%;overflow:hidden}
 header{text-align:center;padding:18px 0 6px}
 header h1{font-size:clamp(1.25rem,6vw,1.6rem);font-weight:900;letter-spacing:-.03em}
 header p{color:var(--text2);font-size:clamp(.72rem,3.2vw,.82rem);margin-top:3px;font-weight:500}
@@ -47,14 +48,14 @@ header p{color:var(--text2);font-size:clamp(.72rem,3.2vw,.82rem);margin-top:3px;
 .section-label{font-size:clamp(.68rem,2.8vw,.74rem);color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;font-weight:700}
 
 /* ===== STATS BAR ===== */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0 14px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0 14px;min-width:0}
 .stat{background:var(--surface);border-radius:var(--radius);padding:12px 4px;text-align:center;box-shadow:var(--shadow);border:1px solid var(--border-light);min-width:0;overflow:hidden}
 .stat-value{font-size:clamp(1.1rem,5.5vw,1.4rem);font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:-.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .stat-label{font-size:clamp(.6rem,2.4vw,.68rem);color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-top:2px;font-weight:600}
 .stat-value.streak{color:var(--warn)}
 
 /* ===== MODE TABS ===== */
-.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:6px 0 14px}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:6px 0 14px;min-width:0}
 .tab{
   padding:10px 8px;border-radius:var(--radius-lg);border:1.5px solid var(--border);
   font-size:clamp(.68rem,2.8vw,.76rem);font-weight:600;cursor:pointer;
@@ -85,7 +86,7 @@ header p{color:var(--text2);font-size:clamp(.72rem,3.2vw,.82rem);margin-top:3px;
 }
 
 /* ===== MODULE TAGS ===== */
-.module-select{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:0}
+.module-select{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:0;min-width:0}
 .module-tag{
   padding:10px 8px;border-radius:var(--radius-lg);border:1.5px solid var(--border);
   font-size:clamp(.68rem,2.8vw,.76rem);font-weight:600;cursor:pointer;
@@ -314,7 +315,7 @@ header p{color:var(--text2);font-size:clamp(.72rem,3.2vw,.82rem);margin-top:3px;
 /* iPhone SE / Galaxy S5 / small Android (320-359px) */
 @media(max-width:359px){
   .container{padding:0 10px calc(84px + env(safe-area-inset-bottom,0px))}
-  .stats{gap:3px}.stat{padding:8px 2px}
+  .stats{grid-template-columns:repeat(2,1fr);gap:5px}.stat{padding:8px 4px}.stat-value{font-size:.95rem}
   .tabs{gap:3px}.tab{font-size:.62rem;padding:10px 3px}
   .module-select{gap:5px}.module-tag{font-size:.62rem;padding:10px 5px}
   .card{padding:14px}.option{padding:13px 12px;font-size:.84rem}
@@ -328,8 +329,8 @@ header p{color:var(--text2);font-size:clamp(.72rem,3.2vw,.82rem);margin-top:3px;
 /* iPhone 6/7/8/SE2/12/13/14 & mainstream Android (360-389px) */
 @media(min-width:360px) and (max-width:389px){
   .container{padding:0 12px calc(86px + env(safe-area-inset-bottom,0px))}
-  .stats{gap:4px}.stat{padding:8px 3px}
-  .stat-value{font-size:clamp(.9rem,4.5vw,1.1rem)}
+  .stats{grid-template-columns:repeat(2,1fr);gap:6px}.stat{padding:8px 6px}.stat-value{font-size:1rem}
+  .q-mode-badge{font-size:.6rem;padding:3px 8px}
 }
 
 /* iPhone 14 Pro / 15/16 Pro / Pixel 6-9 / Huawei P60/Mate60 (390-413px) */
@@ -1584,7 +1585,7 @@ const vocab = [
   {de:"das Schach nur Sg",cn:"国际象棋，象棋",article:"das",module:3},
   {de:"der/das Smalltalk -s",cn:"闲聊，寒暄",article:null,module:3},
   {de:"die Verabschiedung -en",cn:"告别，送别",article:"die",module:3},
-  {de:"knapp",cn:"简短的，简明的",article:null,module:3},
+  {de:"knapp (kurz)",cn:"简短的，简明的",article:null,module:3},
   {de:"die Danksagung -en",cn:"致谢，道谢",article:"die",module:3},
   {de:"lächeln",cn:"微笑",article:null,module:3},
   {de:"der Blickkontakt -e",cn:"眼神交流，目光接触",article:"der",module:3},
@@ -1750,7 +1751,7 @@ const vocab = [
   {de:"der Missstand ¨e",cn:"弊病，弊端，不良现象",article:"der",module:4},
   {de:"weiter",cn:"另外的，其他的，附加的；进一步的，继续的",article:null,module:4},
   {de:"die Dokumentation -en",cn:"纪录片；汇编成的文献资料",article:"die",module:4},
-  {de:"das Magazin -e",cn:"（广播、电视的）专栏节目",article:"das",module:4},
+  {de:"das Magazin (TV) -e",cn:"专栏节目",article:"das",module:4},
   {de:"anspruchsvoll",cn:"高品位的，高档次的；讲究的，要求高的",article:null,module:4},
   {de:"einerseits ... andererseits",cn:"一方面……，另一方面……",article:null,module:4},
   {de:"automatisch",cn:"自动，自动的",article:null,module:4},
@@ -2082,7 +2083,7 @@ function cleanDEWord(raw){
     .replace(/^(der|die|das)\s+/,'')
     .replace(/\s*\([^)]*\)\s*/g,'')
     .replace(/\s*\.{3}\w.*$/,'')
-    .replace(/\s*\+\w+(?:\s+\w+)?/g,'')
+    .replace(/\s*\+\S+(?:\s+\S+)?/g,'')
     .replace(/\s*¨.*$/,'')
     .replace(/\s*-[a-z]+.*$/,'')
     .replace(/\s*-\s*$/,'')
