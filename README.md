@@ -1,1 +1,1 @@
-Deploy v40.1
+Deployed via GitHub Actions workflow
