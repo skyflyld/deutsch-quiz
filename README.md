@@ -43,6 +43,7 @@ Einfach öffnen und loslegen — keine Installation nötig.
 ```
 deutsch-quiz/
 ├── index.html              # 单文件应用（HTML + CSS + JS + 词汇数据）
+├── icon.svg                # PWA 应用图标
 ├── manifest.json           # PWA manifest
 ├── LICENSE                 # MIT License
 ├── check.js                # 完整性检查脚本
@@ -73,6 +74,7 @@ deutsch-quiz/
 
 | 版本 | 备注 |
 |------|------|
+| v45 | SEO meta(OG/Twitter/description), 可访问性(user-scalable=yes), PWA图标(SVG), 390px裁切2列stats |
 | v44 | 屏蔽 `‑wöchig`/`‑bar` 被清空bug，音标 `[...]` 清洗，390px 自适应(2列stats)，工程完整性(LICENSE/check.js增强/CI集成)，README许可修正 |
 | v43 | Unicode 语法标记清洗 (+über Akk)，去重 knapp/Magazin，≤389px stats 自适应，manifest.json/LICENSE/check.js |
 | v42 | 全部 1,513 词入库，修复 cleanDEWord() 正则 bug，移动端溢出保护 |
