@@ -70,7 +70,7 @@ deutsch-quiz/
 
 | 版本 | 备注 |
 |------|------|
-| v43 | 修移动端 360-389px 视口统计卡片字号 |
+| v43 | Unicode 语法标记清洗 (+über Akk)，去重 knapp/Magazin，≤389px stats 自适应，manifest.json/LICENSE/check.js |
 | v42 | 全部 1,513 词入库，修复 cleanDEWord() 正则 bug，移动端溢出保护 |
 | v41 | 部分词版，多轮 CSS/UX 精调 |
 | v1–v40 | 先后完成多题型、模块筛选、进度持久化、暗色模式、全设备自适应 |
