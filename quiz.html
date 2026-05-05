@@ -112,7 +112,7 @@ body{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset
 <div class="section-label">题型（可多选）</div>
 <div class="tabs">
   <button class="tab active" onclick="toggleMode('de-cn')">DE → CN 选择</button>
-  <button class="tab active" onclick="toggleMode('cn-de')">CN → DE 填空</button>
+  <button class="tab active" onclick="toggleMode('cn-de')">CN → DE 选择</button>
   <button class="tab active" onclick="toggleMode('article')">冠词判断</button>
 </div>
 
@@ -286,6 +286,29 @@ function getPool(){
   return vocab.filter(v=>activeModules.has(v.module) && (currentMode!=='article' || v.article));
 }
 
+function cleanDEWord(w){
+  return w.de
+    .replace(/\([^)]*\)/g,'')
+    .replace(/^((der|die|das)\s+)/i,'')
+    .replace(/\s*\+\w.*$/,'')
+    .replace(/\s*-[a-zäöüß]*$/,'')
+    .replace(/\s*¨.*$/,'')
+    .replace(/^sich\s+/i,'')
+    .trim();
+}
+
+function pickWrongsDE(correctWord, n=3){
+  const pool = getPool().filter(v=>v.cn!==correctWord.cn);
+  const picked = [];
+  const used = new Set();
+  while(picked.length<n && picked.length<pool.length){
+    const r = pool[Math.floor(Math.random()*pool.length)];
+    const cw = cleanDEWord(r);
+    if(!used.has(cw)){used.add(cw);picked.push(cw)}
+  }
+  return picked;
+}
+
 function pickWrongs(correctWord, n=3){
   const pool = getPool().filter(v=>v.cn!==correctWord.cn);
   const picked = [];
@@ -328,12 +351,15 @@ function newQuestion(){
       `<button class="option" onclick="answerDE_CN('${o.replace(/'/g,"\\'")}', ${i})">${o}</button>`
     ).join('');
   } else if(currentMode==='cn-de'){
-    document.getElementById('qLabel').textContent='输入对应的德语单词/短语';
+    document.getElementById('qLabel').textContent='选择对应的德语释义';
     document.getElementById('qWord').textContent=currentWord.cn;
-    document.getElementById('qHint').innerHTML='直接输入核心词即可，不用冠词和 sich，如 <em>Haus</em> 或 <em>unterstützen</em>';
-    document.getElementById('answerArea').innerHTML = `
-      <input class="fill-input" id="fillInput" placeholder="输入德语..." autocomplete="off" onkeydown="if(event.key==='Enter')answerCN_DE()">
-      <button class="submit-btn" onclick="answerCN_DE()">确认 ✓</button>`;
+    document.getElementById('qHint').textContent='';
+    const cleanWord = cleanDEWord(currentWord);
+    const wrongs = pickWrongsDE(currentWord);
+    currentOptions = shuffle([cleanWord, ...wrongs.slice(0,3)]);
+    document.getElementById('answerArea').innerHTML = currentOptions.map((o,i)=>
+      `<button class="option" onclick="answerCN_DE('${o.replace(/'/g,"\\'")}', ${i})">${o}</button>`
+    ).join('');
   } else if(currentMode==='article'){
     document.getElementById('qLabel').textContent='这个词的冠词是？';
     document.getElementById('qWord').textContent=currentWord.de;
@@ -372,52 +398,24 @@ function answerDE_CN(selected, idx){
   updateStats();
 }
 
-function answerCN_DE(){
+function answerCN_DE(selected, idx){
   if(answered)return;
-  const input = document.getElementById('fillInput');
-  if(!input||!input.value.trim())return;
   answered=true;total++;
-  const userAns = input.value.trim().toLowerCase();
-  // Strip article, annotations, plural markers, and "sich" — order matters
-  let correctAns = currentWord.de
-    .replace(/\([^)]*\)/g,'')   // strip parenthesized notes like (+A) — do this first
-    .replace(/^((der|die|das)\s+)/i,'')
-    .replace(/\s*\+\w.*$/,'')
-    .replace(/\s*-[a-zäöüß]+.*$/,'')
-    .replace(/\s*¨.*$/,'')
-    .replace(/^sich\s+/i,'')
-    .trim().toLowerCase();
-
-  // Normalize: collapse spaces, remove any leftover annotation artifacts
-  const normalize = s => s.replace(/\s+/g,' ').replace(/[\-+()]/g,'').trim();
-  const normUser = normalize(userAns);
-  const normCorrect = normalize(correctAns);
-
-  // Exact match after normalization
-  let isCorrect = normUser === normCorrect;
-
-  // Fuzzy: core letters match (for minor spelling variations)
-  if(!isCorrect){
-    const core = normCorrect.replace(/\s+/g,'');
-    const userCore = normUser.replace(/\s+/g,'');
-    isCorrect = userCore===core;
-  }
-
-  // Loose: user input ≥60% of correct answer length and is contained (catch partial answers)
-  if(!isCorrect && normUser.length>=3 && normCorrect.includes(normUser) && normUser.length/normCorrect.length>=0.6){
-    isCorrect = true;
-  }
-
-  if(isCorrect){
-    input.className='fill-input correct';
+  const correctAns = cleanDEWord(currentWord);
+  const btns = document.querySelectorAll('.option');
+  btns.forEach(b=>{
+    if(b.textContent===correctAns)b.classList.add('correct');
+    else b.classList.add('wrong');
+  });
+  const fb = document.getElementById('feedback');
+  if(selected===correctAns){
     score++;correct++;streak++;
-    document.getElementById('feedback').className='feedback show correct';
-    document.getElementById('feedback').textContent=`✓ 正确！${streak>1?' 🔥连击 ×'+streak:''}（${currentWord.de}）`;
+    fb.className='feedback show correct';
+    fb.textContent=`✓ 正确！${streak>1?' 🔥连击 ×'+streak:''}（${currentWord.de}）`;
   } else {
-    input.className='fill-input wrong';
     streak=0;
-    document.getElementById('feedback').className='feedback show wrong';
-    document.getElementById('feedback').textContent=`✗ 答案是：${currentWord.de}`;
+    fb.className='feedback show wrong';
+    fb.textContent=`✗ 答案是：${currentWord.de}`;
   }
   document.getElementById('nextBtn').className='next-btn show';
   updateStats();
@@ -455,7 +453,6 @@ function updateStats(){
 
 function nextQuestion(){
   newQuestion();
-  if(currentMode==='cn-de') setTimeout(()=>document.getElementById('fillInput')?.focus(), 100);
 }
 
 function toggleMode(m){
