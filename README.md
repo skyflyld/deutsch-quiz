@@ -10,7 +10,7 @@
 
 | 中文 | Deutsch |
 |------|---------|
-| **159 个德语词汇**，分 4 个主题模块 | **159 deutsche Wörter** in 4 thematischen Modulen |
+| **1,513 个德语词汇**，分 4 个主题模块（24 个单元） | **1.513 deutsche Wörter** in 4 thematischen Modulen (24 Lektionen) |
 | **3 种练习模式** | **3 Übungsmodi** |
 | — **DE → CN 选择**：看德语选中文 | — **DE → CN**：Deutsch sehen, Chinesisch wählen |
 | — **CN → DE 选择**：看中文选德语 | — **CN → DE**：Chinesisch sehen, Deutsch wählen |
@@ -52,13 +52,29 @@ deutsch-quiz/
 
 | 模块 / Modul | 词数 / Wörter |
 |--------------|--------------|
-| Modul 1 | 50 |
-| Modul 2 | 35 |
-| Modul 3 | 38 |
-| Modul 4 | 36 |
-| **合计 Gesamt** | **159** |
+| Modul 1 — Familie und Gesellschaft | 311 |
+| Modul 2 — Natur und Kultur | 433 |
+| Modul 3 — Bildung und Beruf | 381 |
+| Modul 4 — Menschen und Kommunikation | 388 |
+| **合计 Gesamt** | **1,513** |
 
-冠词分布（适用于有词性的词汇）：`der` × 39, `die` × 49, `das` × 17
+冠词分布（适用于有词性的词汇）：`der` × 258, `die` × 361, `das` × 141（另 753 词无冠词）
+
+## 📝 数据来源 / Datenquelle
+
+词汇数据提取自飞书知识库文档「Deutsch Lernen · 德语学习知识库」（基于《新经典德语 2》教材，Modul 1–4 / Lektion 1–12 / 24 个 Entdecken 单元）。
+
+自动解析 lark-table HTML 表格提取，按 Modul 归类，保留所有原始语法信息（冠词、复数、动词配价等）。
+
+## 📜 版本记录 / Versionshistorie
+
+| 版本 | 备注 |
+|------|------|
+| v42 | 全部 1,513 词入库，修复 cleanDEWord() 正则 bug，移动端溢出保护 |
+| v41 | 部分词版，多轮 CSS/UX 精调 |
+| v1–v40 | 先后完成多题型、模块筛选、进度持久化、暗色模式、全设备自适应 |
+
+---
 
 ## 📝 许可 / Lizenz
 
