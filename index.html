@@ -48,8 +48,8 @@ header p{color:var(--text2);font-size:clamp(.72rem,3.2vw,.82rem);margin-top:3px;
 
 /* ===== STATS BAR ===== */
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0 14px}
-.stat{background:var(--surface);border-radius:var(--radius);padding:12px 4px;text-align:center;box-shadow:var(--shadow);border:1px solid var(--border-light)}
-.stat-value{font-size:clamp(1.1rem,5.5vw,1.4rem);font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.stat{background:var(--surface);border-radius:var(--radius);padding:12px 4px;text-align:center;box-shadow:var(--shadow);border:1px solid var(--border-light);min-width:0;overflow:hidden}
+.stat-value{font-size:clamp(1.1rem,5.5vw,1.4rem);font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:-.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .stat-label{font-size:clamp(.6rem,2.4vw,.68rem);color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-top:2px;font-weight:600}
 .stat-value.streak{color:var(--warn)}
 
@@ -60,7 +60,7 @@ header p{color:var(--text2);font-size:clamp(.72rem,3.2vw,.82rem);margin-top:3px;
   font-size:clamp(.68rem,2.8vw,.76rem);font-weight:600;cursor:pointer;
   background:var(--surface);color:var(--text2);transition:all .2s;min-height:44px;
   display:flex;align-items:center;justify-content:center;text-align:center;
-  -webkit-tap-highlight-color:transparent;user-select:none;line-height:1.25
+  -webkit-tap-highlight-color:transparent;user-select:none;line-height:1.25;min-width:0;overflow:hidden
 }
 .tab:active{transform:scale(.97);background:var(--accent-light)}
 .tab.active{color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.15)}
@@ -91,7 +91,7 @@ header p{color:var(--text2);font-size:clamp(.72rem,3.2vw,.82rem);margin-top:3px;
   font-size:clamp(.68rem,2.8vw,.76rem);font-weight:600;cursor:pointer;
   background:var(--surface);color:var(--text2);transition:all .2s;min-height:44px;
   display:flex;align-items:center;justify-content:center;text-align:center;
-  -webkit-tap-highlight-color:transparent;user-select:none;line-height:1.25
+  -webkit-tap-highlight-color:transparent;user-select:none;line-height:1.25;min-width:0;overflow:hidden
 }
 .module-tag:active{transform:scale(.97);background:var(--accent-light)}
 .module-tag.active{color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.12)}
@@ -2076,7 +2076,16 @@ function updateProgress(){
 }
 
 function cleanDEWord(raw){
-  return raw.replace(/^(der|die|das)\s+/,'').replace(/^sich\s+/,'').replace(/\(Pl\.\)/,'').replace(/\s*\.{3}\w.*$/,'').replace(/\s*\+\w.*$/,'').replace(/\s*¨.*$/,'').replace(/\s*-[a-z].*$/,'').replace(/\s*-\s*$/,'').trim();
+  return raw
+    .replace(/^(der|die|das)\s+/,'')
+    .replace(/\s*\([^)]*\)\s*/g,'')
+    .replace(/\s*\.{3}\w.*$/,'')
+    .replace(/\s*\+\w+(?:\s+\w+)?/g,'')
+    .replace(/\s*¨.*$/,'')
+    .replace(/\s*-[a-z]+.*$/,'')
+    .replace(/\s*-\s*$/,'')
+    .replace(/\s+/g,' ')
+    .trim();
 }
 
 function pickWrongsDE(currentWord, n=3){
