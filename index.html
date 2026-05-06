@@ -2149,7 +2149,7 @@ function newQuestion(){
   }
   // Prefer unseen questions; reset when all seen
   const unseen=pool.filter(v=>!seenSet.has(v.de+'|'+currentMode));
-  if(unseen.length>0) pool=unseen; else seenSet.clear();
+  if(!unseen.length){pool=getPool();} // 全探索后保持100%，不归零
   currentWord=pool[Math.floor(Math.random()*pool.length)];
 
   document.getElementById('qCounter').textContent=total>0?`第 ${total+1} 题`:'第 1 题';
