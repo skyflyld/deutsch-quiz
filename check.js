@@ -11,9 +11,8 @@ let errors = 0;
 function err(msg) { console.log('  ❌ ' + msg); errors++; }
 
 // 0. Version
-const verMatch = html.match(/>v(\d+)</);
-const version = verMatch ? verMatch[1] : '?';
-console.log(`📋 版本: v${version}, 文件大小: ${(html.length/1024).toFixed(0)}KB`);
+const badgeVer = html.match(/display:block">([^<]+)<\/span>/)?.pop()||'?';
+console.log(`📋 版本: ${badgeVer}, 文件大小: ${(html.length/1024).toFixed(0)}KB`);
 
 // 1. HTML 基本结构检查
 console.log('📋 检查 HTML 结构...');

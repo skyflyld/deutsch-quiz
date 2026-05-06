@@ -2151,7 +2151,6 @@ function newQuestion(){
   const unseen=pool.filter(v=>!seenSet.has(v.de+'|'+currentMode));
   if(unseen.length>0) pool=unseen; else seenSet.clear();
   currentWord=pool[Math.floor(Math.random()*pool.length)];
-  seenSet.add(currentWord.de+'|'+currentMode);
 
   document.getElementById('qCounter').textContent=total>0?`第 ${total+1} 题`:'第 1 题';
   const badge=document.getElementById('qModeBadge');
@@ -2211,6 +2210,7 @@ function answerDE_CN(selected,idx){
   fb.textContent=isOk?`✓ 正确！${streak>1?' 🔥连击 ×'+streak:''}`:`✗ 答案是：${correctAns}`;
   document.getElementById('actionNext').classList.add('show');
   document.getElementById('actionBar').classList.add('has-next');
+  seenSet.add(currentWord.de+'|de-cn');
   updateStats();updateProgress();saveState();
 }
 
@@ -2229,6 +2229,7 @@ function answerCN_DE(selected,idx){
   fb.textContent=isOk?`✓ 正确！${currentWord.de}${streak>1?' 🔥连击 ×'+streak:''}`:`✗ 正确答案：${currentWord.de}`;
   document.getElementById('actionNext').classList.add('show');
   document.getElementById('actionBar').classList.add('has-next');
+  seenSet.add(currentWord.de+'|cn-de');
   updateStats();updateProgress();saveState();
 }
 
@@ -2247,6 +2248,7 @@ function answerArticle(guess){
   fb.textContent=isOk?`✓ ${correctArt} 正确！${streak>1?' 🔥×'+streak:''}`:`✗ 应该是 ${correctArt}`;
   document.getElementById('actionNext').classList.add('show');
   document.getElementById('actionBar').classList.add('has-next');
+  seenSet.add(currentWord.de+'|article');
   updateStats();updateProgress();saveState();
 }
 
