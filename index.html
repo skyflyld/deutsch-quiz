@@ -2381,7 +2381,7 @@ function retryWrong(){
     if(v&&!retryPool.some(r=>r.de===v.de&&r.cn===v.cn)) retryPool.push(v);
   });
   if(retryPool.length===0){retryPool=null;restartQuiz();return}
-  clearState();
+  score=0;streak=0;total=0;correct=0;
   document.getElementById('retryBadge').style.display='inline';
   document.getElementById('resultsWrap').classList.remove('active');
   transitionToQuiz();
